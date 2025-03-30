@@ -23,11 +23,11 @@ export default function Table({ columns, data }: TableProps) {
         <tbody>
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-primary group border-b">
+              <tr key={rowIndex} className="hover:bg-gray-300 group border-b">
                 {columns.map((col, colIndex) => (
                   <td
                     key={colIndex}
-                    className="p-4 text-gray-800 group-hover:text-secondary text-lg font-semibold"
+                    className="p-4 text-gray-800  text-lg font-semibold"
                   >
                     {row[col]}
                   </td>

@@ -5,11 +5,7 @@ import * as Yup from "yup";
 import { useState } from "react";
 import Alert from "../../components/Alert";
 import { useNavigate } from "react-router";
-
-// const mock = {
-//   email: "saulo@email.com",
-//   password: "123456",
-// };
+import { login } from "../../services/clientesService";
 
 const schema = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -32,12 +28,29 @@ export default function Login() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: submitTypes) => {
-    // if (data.email !== mock.email || data.password !== mock.password) {
-    //   setAlertMessage({ message: "Email ou senha inválidos", type: "error" });
-    //   return;
-    // }
-    navigate("/dashboard");
+  const onSubmit = async (data: submitTypes) => {
+    const { email, password } = data;
+
+    const response = await login(email, password);
+
+    console.log(response);
+
+    if (!response.success) {
+      setAlertMessage({ message: response.message, type: "error" });
+      return;
+    }
+
+    if (response.token) {
+      sessionStorage.setItem("authToken", response.token);
+      console.log("Usuário logado com sucesso!");
+      navigate("/dashboard");
+    } else {
+      console.error("Erro ao fazer login");
+    }
+  };
+
+  const handleInputChange = () => {
+    setAlertMessage({ message: null, type: undefined });
   };
 
   return (
@@ -61,6 +74,7 @@ export default function Login() {
               {...register("email")}
               className="input input-bordered w-full focus:outline-0"
               placeholder="Digite seu email"
+              onChange={handleInputChange}
             />
             {errors.email && (
               <p className="text-red-500 font-light text-xs">
@@ -78,6 +92,7 @@ export default function Login() {
               {...register("password")}
               className="input input-bordered w-full focus:outline-0"
               placeholder="Digite sua senha"
+              onChange={handleInputChange}
             />
             {errors.password && (
               <p className="text-red-500 font-light text-xs">
@@ -86,7 +101,7 @@ export default function Login() {
             )}
           </div>
 
-          <button type="submit" className="btn btn-primary group   w-full">
+          <button type="submit" className="btn btn-primary group w-full">
             Login
           </button>
         </form>
