@@ -15,6 +15,7 @@ export default api;
 api.interceptors.response.use(
   (response) => response, // Se a resposta for bem-sucedida, apenas retorna
   (error) => {
+    console.error("Erro na requisição:", error);
     if (error.response && error.response.status === 401) {
       // Se o status for 401 (não autorizado), redireciona para o login
       window.location.href = "/"; // Altere conforme sua rota de login
