@@ -6,46 +6,49 @@ interface TableProps {
 
 export default function Table({ columns, data }: TableProps) {
   return (
-    <div className="overflow-x-auto rounded-lg shadow-md ">
-      <table className="table w-full bg-white border border-gray-200">
+    <div className="overflow-x-auto rounded-lg shadow-md">
+      <div className="w-full flex flex-col">
         {/* Cabeçalho */}
-        <thead>
-          <tr className="bg-neutral text-white ">
-            {columns.map((col, index) => (
-              <th key={index} className="p-4  font-semibold text-lg">
-                {col}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        <div className="flex bg-neutral text-white font-semibold text-lg">
+          {columns.map((col, index) => (
+            <div
+              key={index}
+              className={`p-4 flex-1 min-w-[${
+                100 / columns.length
+              }%] text-center`}
+            >
+              {col}
+            </div>
+          ))}
+        </div>
 
         {/* Corpo */}
-        <tbody>
+        <div className="flex flex-col border border-gray-200">
           {data.length > 0 ? (
             data.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-gray-300 group border-b">
+              <div
+                key={rowIndex}
+                className="flex hover:bg-gray-300 group border-b"
+              >
                 {columns.map((col, colIndex) => (
-                  <td
+                  <div
                     key={colIndex}
-                    className="p-4 text-gray-800  text-lg font-semibold"
+                    className={`p-4 flex-1 min-w-[${
+                      100 / columns.length
+                    }%] text-center`}
                   >
                     {row[col]}
-                  </td>
+                  </div>
                 ))}
-              </tr>
+              </div>
             ))
           ) : (
-            <tr>
-              <td
-                colSpan={columns.length}
-                className="text-center p-6 text-gray-500"
-              >
-                Nenhum dado disponível
-              </td>
-            </tr>
+            <div className="p-6 text-gray-500 text-center">
+              Nenhum dado disponível
+            </div>
           )}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 }

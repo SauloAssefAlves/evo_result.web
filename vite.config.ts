@@ -8,5 +8,6 @@ export default defineConfig({
   server: {
     host: true, // Permite acesso externo
     allowedHosts: ["sistema.evoresult.com.br"], // Adiciona seu domínio à lista de hosts permitidos
+    hmr: false,
   },
 });

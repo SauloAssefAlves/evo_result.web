@@ -2,7 +2,13 @@ import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Table from "../../components/Table";
-import { cadastrarCliente, getClientes } from "../../services/clientesService";
+import {
+  cadastrarCliente,
+  excluirCliente,
+  getClientes,
+} from "../../services/clientesService";
+
+import DeleteWarning from "../../components/DeleteWarning";
 
 export default function Clientes() {
   const [clientes, setClientes] = useState<
@@ -26,6 +32,21 @@ export default function Clientes() {
     fetchClientes();
   }, []);
 
+  async function excluir(id: number) {
+    await excluirCliente(id);
+    toast.success("Cliente excluído com sucesso!");
+    const updatedClientes = clientes.filter((cliente) => cliente.id !== id);
+    setClientes(updatedClientes);
+  }
+
+  function Buttons(id: number) {
+    return (
+      <div className="flex gap-2 items-center justify-center">
+        <DeleteWarning onConfirm={() => excluir(id)} />
+      </div>
+    );
+  }
+
   const handleAddCliente = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -35,16 +56,18 @@ export default function Clientes() {
     };
 
     console.log("Cliente a ser adicionado:", novoCliente);
-    // Aqui você pode chamar a API para cadastrar o cliente
     await cadastrarCliente(novoCliente);
 
     toast.success("Cliente cadastrado com sucesso!");
+
+    const data = await getClientes();
+    setClientes(data);
 
     if (formRef.current) {
       formRef.current.reset();
     }
 
-    modalRef.current?.close(); // Fecha o modal após o cadastro
+    modalRef.current?.close();
   };
 
   return (
@@ -64,9 +87,10 @@ export default function Clientes() {
         {/* Tabela */}
         <div className="overflow-x-auto">
           <Table
-            columns={["Nome"]}
-            data={clientes.map(({ nome }) => ({
+            columns={["Nome", "Ações"]}
+            data={clientes.map(({ nome, id }) => ({
               Nome: nome,
+              Ações: Buttons(id),
             }))}
           />
         </div>

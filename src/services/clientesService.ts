@@ -111,3 +111,13 @@ export const cadastrarTintim = async (unidade: {
     }
   }
 };
+
+export const excluirCliente = async (id: number) => {
+  try {
+    const response = await api.delete("/cliente/excluir/" + id);
+    return response; // Retorna a lista de clientes
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
+    return [];
+  }
+};
