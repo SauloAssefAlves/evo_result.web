@@ -55,7 +55,6 @@ export default function Tintim() {
     const nome = unidade;
     const todas_unidades = unidade === "todas";
 
-    // Enviar para o backend
     const response = await cadastrarTintim({
       empresa_id: Number(empresa_id),
       nome: nome as string,
@@ -147,7 +146,7 @@ export default function Tintim() {
               }) => ({
                 Cliente: cliente,
                 Unidade: todas_unidades ? "Todas" : unidade,
-                Link: url + "/" + unidade_formatada,
+                Link: url + "/tintimWebhook/" + unidade_formatada,
                 Ações: buttonDelete(id),
               })
             )}

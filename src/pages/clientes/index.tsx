@@ -7,10 +7,13 @@ import {
   excluirCliente,
   getClientes,
 } from "../../services/clientesService";
+import { FaFilter } from "react-icons/fa6";
+import { useNavigate } from "react-router";
 
 import DeleteWarning from "../../components/DeleteWarning";
 
 export default function Clientes() {
+  const navigate = useNavigate();
   const [clientes, setClientes] = useState<
     Array<{
       id: number;
@@ -40,13 +43,21 @@ export default function Clientes() {
   }
 
   function Buttons(id: number) {
+
     return (
       <div className="flex gap-2 items-center justify-center">
+        <button
+          className="btn btn-neutral"
+          onClick={() => {
+            navigate(`/dashboard/clientes/${id}/pipelines`); // Redireciona para a página do cliente
+          }}
+        >
+          <FaFilter />
+        </button>
         <DeleteWarning onConfirm={() => excluir(id)} />
       </div>
     );
   }
-
   const handleAddCliente = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);

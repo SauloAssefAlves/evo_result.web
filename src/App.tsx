@@ -6,10 +6,16 @@ function App() {
   return (
     <>
       <ToastContainer
-        position="bottom-right"
+        position="top-right"
         autoClose={3000}
-        style={{ zIndex: 10000 }}
-        className="!z-[10000]"
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
       <Router />
     </>

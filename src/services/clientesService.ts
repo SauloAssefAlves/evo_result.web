@@ -29,6 +29,24 @@ export const getClientes = async () => {
     return [];
   }
 };
+export const getClientesPipeline = async (id: string | undefined) => {
+  try {
+    const response = await api.get(`/cliente/listarClientePipelines/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
+    return [];
+  }
+};
+export const getPipelines = async (id: string | undefined) => {
+  try {
+    const response = await api.get(`/cliente/listarPipelines/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
+    return [];
+  }
+};
 export const getClientePeloNome = async (cliente: string) => {
   try {
     const response = await api.get(`/cliente/listarPeloNome/${cliente}`);
@@ -112,6 +130,37 @@ export const cadastrarTintim = async (unidade: {
   }
 };
 
+export const cadastrarClientePipeline = async (pipeline: {
+  nome: string | undefined;
+  cliente_id: number;
+  pipeline_id: number;
+}) => {
+  try {
+    console.log("Cadastrando Pipeline:", pipeline);
+    const response = await api.post(
+      "/cliente/cadastrarClientePipelines",
+      pipeline
+    );
+    return {
+      success: true,
+      data: response.data,
+      message: response.data.message || "Pipeline cadastrada com sucesso",
+    }; // Retorna o cliente cadastrado
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Erro desconhecido na API",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Erro inesperado. Verifique a conexão com a API.",
+      };
+    }
+  }
+};
+
 export const excluirCliente = async (id: number) => {
   try {
     const response = await api.delete("/cliente/excluir/" + id);
@@ -119,5 +168,26 @@ export const excluirCliente = async (id: number) => {
   } catch (error) {
     console.error("Erro ao buscar clientes:", error);
     return [];
+  }
+};
+export const excluirClientePipeline = async (id: number) => {
+  try {
+    const response = await api.delete("/cliente/excluirClientePipeline/" + id);
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Erro desconhecido na API",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Erro inesperado. Verifique a conexão com a API.",
+      };
+    }
   }
 };
