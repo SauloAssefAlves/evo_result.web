@@ -49,11 +49,15 @@ export default function Tintim() {
 
     const formData = new FormData(formRef.current);
     const cliente = formData.get("cliente");
-    const unidade = formData.get("unidade");
+    let unidade = formData.get("unidade");
+    if (!unidade) {
+      unidade = "todas";
+    }
 
     const empresa_id = cliente;
     const nome = unidade;
     const todas_unidades = unidade === "todas";
+    console.log("Cliente:", todas_unidades);
 
     const response = await cadastrarTintim({
       empresa_id: Number(empresa_id),
