@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "scripts": {
-    "install": "npm ci",
-    "dev": "vite --force",
-    "build": "vite build",
-    "start": "vite preview",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+"scripts": {
+  "install": "npm ci",
+  "dev": "vite --force",
+  "build": "vite build",
+  "start": "vite preview --port 1212",
+  "lint": "eslint .",
+  "preview": "vite preview --port 1212"
+},
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
     "@tailwindcss/vite": "^4.0.16",
