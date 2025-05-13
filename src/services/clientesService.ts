@@ -73,7 +73,7 @@ export const getUnidadesPorCliente = async (
 ) => {
   try {
     const response = await api.post(
-      `http://localhost:1212/cliente/listarUnidades`,
+      `/cliente/listarUnidades`,
       { subdomain, token }
     );
     return response.data.unidades; // Retorna a lista de clientes

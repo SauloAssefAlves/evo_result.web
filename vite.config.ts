@@ -6,8 +6,12 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    host: true, // Permite acesso externo
-    allowedHosts: ["sistema.evoresult.com.br"], // Adiciona seu domínio à lista de hosts permitidos
-    hmr: false,
+    host: true,
+    allowedHosts: ["sistema.evoresult.com.br"],
+    hmr: {
+      protocol: "ws",
+      host: "sistema.evoresult.com.br",
+      port: 1212, // porta onde o Vite está rodando
+    },
   },
 });
