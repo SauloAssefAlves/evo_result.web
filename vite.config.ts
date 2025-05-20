@@ -8,10 +8,15 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: ["sistema.evoresult.com.br"],
-    hmr: {
-      protocol: "ws",
-      host: "sistema.evoresult.com.br",
-      port: 1212, // porta onde o Vite está rodando
+    cors: {
+      origin: "*", // Allow all origins
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed methods
+      allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
     },
+    // hmr: {
+    //   protocol: "ws",
+    //   host: "sistema.evoresult.com.br",
+    //   port: 1212, // porta onde o Vite está rodando
+    // },
   },
 });

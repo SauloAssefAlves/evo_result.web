@@ -22,6 +22,14 @@ export default function SideBar() {
         >
           TinTim
         </NavLink>
+        <NavLink
+          to="/dashboard/portais"
+          className={({ isActive }) =>
+            `btn w-full ${isActive ? "btn-warning" : "btn-ghost"}`
+          }
+        >
+          Portais
+        </NavLink>
       </nav>
     </aside>
   );
