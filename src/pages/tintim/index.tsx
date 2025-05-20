@@ -7,8 +7,10 @@ import {
   getClientePeloId,
   getUnidadesPorCliente,
   cadastrarTintim,
+  excluirClienteTintim,
 } from "../../services/clientesService";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaCopy } from "react-icons/fa";
+import DeleteWarning from "../../components/DeleteWarning";
 
 export default function Tintim() {
   const [tintimData, setTintimData] = useState([]);
@@ -19,7 +21,6 @@ export default function Tintim() {
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const url = import.meta.env.VITE_API_URL;
 
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -110,17 +111,40 @@ export default function Tintim() {
     }
   };
 
-  function buttonDelete(id: string) {
+    async function excluirTintim(id: number) {
+      await excluirClienteTintim(id);
+      toast.success("Tintim excluído com sucesso!");
+      const updatedClientes = clientes.filter((cliente) => cliente.id !== id.toString());
+      setClientes(updatedClientes);
+    }
+
+  function buttons(id: string, unidade_formatada: string) {
     return (
-      <button
-        className="btn btn-neutral "
-        onClick={() => {
-          // Função para deletar o tintim
-          console.log("Deletar tintim com id:", id);
-        }}
-      >
-        <FaTrash />
-      </button>
+      <div className="flex gap-2 items-center justify-center">
+        <button
+          className="btn btn-neutral "
+          onClick={() => {
+            // Função para deletar o tintim
+            navigator.clipboard
+              .writeText(
+                "http://89.116.186.230:1212/tintimWebhook/" + unidade_formatada
+              )
+              .then(() => {
+                toast.success("Link copiado para a área de transferência!");
+              })
+              .catch((err) => {
+                console.error(
+                  "Erro ao copiar para a área de transferência:",
+                  err
+                );
+                toast.error("Erro ao copiar o link.");
+              });
+          }}
+        >
+          <FaCopy />
+        </button>
+        <DeleteWarning onConfirm={()=> excluirTintim(Number(id))}/>
+      </div>
     );
   }
 
@@ -139,7 +163,7 @@ export default function Tintim() {
 
         <div className="overflow-x-auto">
           <Table
-            columns={["Cliente", "Unidade", "Link", "Ações"]}
+            columns={["Cliente", "Unidade", "Ações"]}
             data={tintimData.map(
               ({
                 id,
@@ -150,8 +174,7 @@ export default function Tintim() {
               }) => ({
                 Cliente: cliente,
                 Unidade: todas_unidades ? "Todas" : unidade,
-                Link: url + "/tintimWebhook/" + unidade_formatada,
-                Ações: buttonDelete(id),
+                Ações: buttons(id, unidade_formatada),
               })
             )}
           />

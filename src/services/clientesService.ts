@@ -216,6 +216,27 @@ export const excluirClientePipeline = async (id: number) => {
     }
   }
 };
+export const excluirClienteTintim = async (id: number) => {
+  try {
+    const response = await api.delete("/cliente/excluirClienteTintim/" + id);
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Erro desconhecido na API",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Erro inesperado. Verifique a conexão com a API.",
+      };
+    }
+  }
+};
 export const excluirClientePortais = async (id: number) => {
   try {
     const response = await api.delete("/cliente/excluirClientePortais/" + id);
