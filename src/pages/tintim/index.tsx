@@ -9,7 +9,7 @@ import {
   cadastrarTintim,
   excluirClienteTintim,
 } from "../../services/clientesService";
-import { FaTrash, FaCopy } from "react-icons/fa";
+import { FaCopy } from "react-icons/fa";
 import DeleteWarning from "../../components/DeleteWarning";
 
 export default function Tintim() {
