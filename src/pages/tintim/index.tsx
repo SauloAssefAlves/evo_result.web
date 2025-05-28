@@ -46,6 +46,7 @@ export default function Tintim() {
 
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
+  const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getTintim();
     console.log("Tintim Data:", data);
@@ -134,7 +135,7 @@ export default function Tintim() {
     toast.success("Tintim editado com sucesso!");
     fetchClientes();
     setErrorMessage(null);
-    modalRef.current?.close();
+    modalEditRef.current?.close();
     setEditCliente({});
     setEditUnidades([]);
     setEditUnidadeSelecionada("");
@@ -221,9 +222,11 @@ export default function Tintim() {
             );
 
             if (clienteSelecionado) {
-              modalRef.current?.showModal();
+              modalEditRef.current?.showModal();
               setEditCliente(clienteSelecionadoTintim);
-              setEditUnidadeSelecionada(clienteSelecionadoTintim.unidade_formatada);
+              setEditUnidadeSelecionada(
+                clienteSelecionadoTintim.unidade_formatada
+              );
               const unidades = await getUnidadesPorCliente(
                 clienteSelecionado.nome,
                 clienteSelecionado.token
@@ -262,12 +265,7 @@ export default function Tintim() {
           <Table
             columns={["Cliente", "Unidade", "Ações"]}
             data={tintimData.map(
-              ({
-                id,
-                cliente,
-                todas_unidades,
-                unidade_formatada,
-              }) => ({
+              ({ id, cliente, todas_unidades, unidade_formatada }) => ({
                 Cliente: cliente,
                 Unidade: todas_unidades ? "Todas" : unidade_formatada,
                 Ações: buttons(id, unidade_formatada),
@@ -369,7 +367,7 @@ export default function Tintim() {
         </div>
       </dialog>
 
-      <dialog ref={modalRef} className="modal">
+      <dialog ref={modalEditRef} className="modal">
         <div className="modal-box">
           <h2 className="text-lg font-bold mb-4">
             <span className="text-primary">[ </span>
@@ -435,7 +433,7 @@ export default function Tintim() {
                   // Resetando os valores e fechando o modal
                   setEditUnidades([]);
                   setEditUnidadeSelecionada("");
-                  modalRef.current?.close();
+                  modalEditRef.current?.close();
                 }}
               >
                 Cancelar
