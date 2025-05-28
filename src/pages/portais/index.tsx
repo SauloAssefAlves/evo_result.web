@@ -224,7 +224,7 @@ export default function Portais() {
         <div className="modal-box  ">
           <h2 className="text-lg font-bold mb-4">
             <span className="text-primary">[ </span>
-            Novo Tintim
+            Novo Portal
             <span className="text-primary"> ] </span>
           </h2>
           <form

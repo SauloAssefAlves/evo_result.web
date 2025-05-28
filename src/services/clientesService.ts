@@ -258,3 +258,31 @@ export const excluirClientePortais = async (id: number) => {
     }
   }
 };
+export const editarTintim = async (
+  id: number,
+  nome: string,
+  todas_unidades: boolean
+) => {
+  try {
+    const response = await api.put("/cliente/editarTintim/" + id, {
+      nome,
+      todas_unidades,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Erro desconhecido na API",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Erro inesperado. Verifique a conexão com a API.",
+      };
+    }
+  }
+};

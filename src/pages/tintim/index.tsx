@@ -8,24 +8,47 @@ import {
   getUnidadesPorCliente,
   cadastrarTintim,
   excluirClienteTintim,
+  editarTintim,
 } from "../../services/clientesService";
-import { FaCopy } from "react-icons/fa";
+import { FaCopy, FaEdit } from "react-icons/fa";
 import DeleteWarning from "../../components/DeleteWarning";
 
 export default function Tintim() {
-  const [tintimData, setTintimData] = useState([]);
-  const [clientes, setClientes] = useState<{ id: string; nome: string }[]>([]);
+  const [tintimData, setTintimData] = useState<
+    {
+      cliente: string;
+      id: number;
+      todas_unidades: boolean;
+      unidade: string;
+      unidade_formatada: string;
+    }[]
+  >([]);
+  const [clientes, setClientes] = useState<
+    { id: string; nome: string; token: string }[]
+  >([]);
   const [clienteSelecionado, setClienteSelecionado] = useState("");
   const [unidades, setUnidades] = useState<{ id: string; value: string }[]>([]);
   const [unidadeSelecionada, setUnidadeSelecionada] = useState("");
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [loadingUnidades, setLoadingUnidades] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editCliente, setEditCliente] = useState<{
+    cliente?: string;
+    id?: number;
+    todas_unidades?: boolean;
+    unidade?: string;
+    unidade_formatada?: string;
+  }>({});
+  const [editUnidades, setEditUnidades] = useState<
+    { id: string; value: string }[]
+  >([]);
+  const [editUnidadeSelecionada, setEditUnidadeSelecionada] = useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getTintim();
+    console.log("Tintim Data:", data);
     setTintimData(data);
   };
   useEffect(() => {
@@ -80,6 +103,43 @@ export default function Tintim() {
     setLoadingUnidades(false);
   };
 
+  const handleEditTintim = async (
+    event: { preventDefault: () => void },
+    id: number
+  ) => {
+    event.preventDefault();
+
+    if (!formRef.current) return;
+
+    const formData = new FormData(formRef.current);
+    const cliente = formData.get("clienteEdit");
+    let unidade = formData.get("unidadeEdit");
+    if (!unidade) {
+      unidade = "todas";
+    }
+
+    const empresa_id = cliente;
+    const nome = unidade;
+    const todas_unidades = unidade === "todas";
+    console.log("Editando Tintim:", id, empresa_id, nome, todas_unidades);
+
+    const response = await editarTintim(id, nome as string, todas_unidades);
+    console.log("Response:", response);
+
+    if (!response.success) {
+      setErrorMessage(response.message || "Erro ao editar Tintim.");
+      return;
+    }
+
+    toast.success("Tintim editado com sucesso!");
+    fetchClientes();
+    setErrorMessage(null);
+    modalRef.current?.close();
+    setEditCliente({});
+    setEditUnidades([]);
+    setEditUnidadeSelecionada("");
+  };
+
   const handleSearchCliente = async (id_cliente: SetStateAction<string>) => {
     try {
       setClienteSelecionado(id_cliente);
@@ -111,14 +171,16 @@ export default function Tintim() {
     }
   };
 
-    async function excluirTintim(id: number) {
-      await excluirClienteTintim(id);
-      toast.success("Tintim excluído com sucesso!");
-      const updatedClientes = clientes.filter((cliente) => cliente.id !== id.toString());
-      setClientes(updatedClientes);
-    }
+  async function excluirTintim(id: number) {
+    await excluirClienteTintim(id);
+    toast.success("Tintim excluído com sucesso!");
+    const updatedClientes = clientes.filter(
+      (cliente) => cliente.id !== id.toString()
+    );
+    setClientes(updatedClientes);
+  }
 
-  function buttons(id: string, unidade_formatada: string) {
+  function buttons(id: number, unidade_formatada: string) {
     return (
       <div className="flex gap-2 items-center justify-center">
         <button
@@ -143,9 +205,44 @@ export default function Tintim() {
         >
           <FaCopy />
         </button>
-        <DeleteWarning onConfirm={()=> excluirTintim(Number(id))}/>
+        <button
+          className="btn btn-neutral"
+          onClick={async () => {
+            const clienteSelecionadoTintim = tintimData.find(
+              (tintim) => tintim.id === id
+            );
+            if (!clienteSelecionadoTintim) {
+              toast.error("Tintim não encontrado.");
+              return;
+            }
+
+            const clienteSelecionado = clientes.find(
+              (cliente) => cliente.nome === clienteSelecionadoTintim.cliente
+            );
+
+            if (clienteSelecionado) {
+              modalRef.current?.showModal();
+              setEditCliente(clienteSelecionadoTintim);
+              setEditUnidadeSelecionada(clienteSelecionadoTintim.unidade_formatada);
+              const unidades = await getUnidadesPorCliente(
+                clienteSelecionado.nome,
+                clienteSelecionado.token
+              );
+              setEditUnidades(unidades);
+            }
+          }}
+        >
+          <FaEdit />
+        </button>
+        <DeleteWarning onConfirm={() => excluirTintim(Number(id))} />
       </div>
     );
+  }
+  function validationEdit() {
+    if (editUnidadeSelecionada === editCliente.unidade_formatada) {
+      return true;
+    }
+    return false;
   }
 
   return (
@@ -168,19 +265,17 @@ export default function Tintim() {
               ({
                 id,
                 cliente,
-                unidade,
                 todas_unidades,
                 unidade_formatada,
               }) => ({
                 Cliente: cliente,
-                Unidade: todas_unidades ? "Todas" : unidade,
+                Unidade: todas_unidades ? "Todas" : unidade_formatada,
                 Ações: buttons(id, unidade_formatada),
               })
             )}
           />
         </div>
       </main>
-
       <dialog ref={modalRef} className="modal ">
         <div className="modal-box  ">
           <h2 className="text-lg font-bold mb-4">
@@ -264,6 +359,82 @@ export default function Tintim() {
                   setLoadingUnidades(false);
                   setErrorMessage(null);
                   // Fechando o modal
+                  modalRef.current?.close();
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+
+      <dialog ref={modalRef} className="modal">
+        <div className="modal-box">
+          <h2 className="text-lg font-bold mb-4">
+            <span className="text-primary">[ </span>
+            Editar Tintim
+            <span className="text-primary"> ] </span>
+          </h2>
+          <form
+            ref={formRef}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleEditTintim(e, editCliente.id as number);
+            }}
+            className="flex flex-col gap-4"
+          >
+            {/* Select de clientes */}
+            <input
+              name="clienteEdit"
+              type="text"
+              required
+              className="input input-bordered w-full focus:outline-none"
+              value={editCliente.cliente || ""}
+              readOnly
+            />
+
+            {/* Select de unidades */}
+
+            {editUnidades.length === 0 ? (
+              <div className="skeleton h-10 w-full rounded-md"></div>
+            ) : (
+              <select
+                name="unidadeEdit"
+                required
+                className="select select-bordered w-full focus:outline-none"
+                value={editUnidadeSelecionada}
+                onChange={(e) => {
+                  setEditUnidadeSelecionada(e.target.value);
+                }}
+              >
+                <option value="" disabled>
+                  Selecione uma unidade
+                </option>
+                <option value="todas">Todas</option>
+                {editUnidades.map((unidade) => (
+                  <option key={unidade.id} value={unidade.value}>
+                    {unidade.value || ""}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            <div className="modal-action">
+              <button
+                type="submit"
+                disabled={validationEdit()}
+                className="btn btn-success"
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  // Resetando os valores e fechando o modal
+                  setEditUnidades([]);
+                  setEditUnidadeSelecionada("");
                   modalRef.current?.close();
                 }}
               >
