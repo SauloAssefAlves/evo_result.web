@@ -49,7 +49,7 @@ export default function Tintim() {
   const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getTintim();
-    console.log("Tintim Data:", data);
+ 
     setTintimData(data);
   };
   useEffect(() => {
@@ -73,8 +73,9 @@ export default function Tintim() {
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
-    const cliente = formData.get("cliente");
+    const cliente = clienteSelecionado;
     let unidade = formData.get("unidade");
+
     if (!unidade) {
       unidade = "todas";
     }
@@ -82,7 +83,7 @@ export default function Tintim() {
     const empresa_id = cliente;
     const nome = unidade;
     const todas_unidades = unidade === "todas";
-    console.log("Cliente:", todas_unidades);
+
 
     const response = await cadastrarTintim({
       empresa_id: Number(empresa_id),
@@ -113,19 +114,19 @@ export default function Tintim() {
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
-    const cliente = formData.get("clienteEdit");
     let unidade = formData.get("unidadeEdit");
+
     if (!unidade) {
       unidade = "todas";
     }
 
-    const empresa_id = cliente;
+ 
     const nome = unidade;
     const todas_unidades = unidade === "todas";
-    console.log("Editando Tintim:", id, empresa_id, nome, todas_unidades);
+
 
     const response = await editarTintim(id, nome as string, todas_unidades);
-    console.log("Response:", response);
+
 
     if (!response.success) {
       setErrorMessage(response.message || "Erro ao editar Tintim.");
@@ -175,10 +176,10 @@ export default function Tintim() {
   async function excluirTintim(id: number) {
     await excluirClienteTintim(id);
     toast.success("Tintim excluído com sucesso!");
-    const updatedClientes = clientes.filter(
-      (cliente) => cliente.id !== id.toString()
+    const updatedClientesTintim = tintimData.filter(
+      (tintim) => tintim.id !== id
     );
-    setClientes(updatedClientes);
+    setTintimData(updatedClientesTintim);
   }
 
   function buttons(id: number, unidade_formatada: string) {
@@ -209,6 +210,7 @@ export default function Tintim() {
         <button
           className="btn btn-neutral"
           onClick={async () => {
+            setLoadingUnidades(true);
             const clienteSelecionadoTintim = tintimData.find(
               (tintim) => tintim.id === id
             );
@@ -231,6 +233,12 @@ export default function Tintim() {
                 clienteSelecionado.nome,
                 clienteSelecionado.token
               );
+              setLoadingUnidades(false);
+              if (unidades.length === 0) {
+                setEditUnidades([]);
+
+            
+              }
               setEditUnidades(unidades);
             }
           }}
@@ -394,7 +402,7 @@ export default function Tintim() {
 
             {/* Select de unidades */}
 
-            {editUnidades.length === 0 ? (
+            {loadingUnidades ? (
               <div className="skeleton h-10 w-full rounded-md"></div>
             ) : (
               <select

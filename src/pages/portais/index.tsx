@@ -8,12 +8,22 @@ import {
   getPipelines,
   cadastrarPortais,
   excluirClientePortais,
+  editarPortal,
 } from "../../services/clientesService";
 import DeleteWarning from "../../components/DeleteWarning";
+import { FaEdit } from "react-icons/fa";
 
 export default function Portais() {
   const [portaisData, setPortais] = useState<
-    { id: number; nome: string; pipeline: string; status_pipeline: string }[]
+    {
+      id: number;
+      nome: string;
+      pipeline: string;
+      status_pipeline: string;
+      pipeline_id: number;
+      status_id: number;
+      id_cliente: number;
+    }[]
   >([]);
   const [clientes, setClientes] = useState<{ id: number; nome: string }[]>([]);
   const [clienteSelecionado, setClienteSelecionado] = useState("");
@@ -37,9 +47,18 @@ export default function Portais() {
   const [loadingPipelines, setLoadingPipelines] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editClienteSelecionado, setEditClienteSelecionado] = useState<{
+    id: number;
+    nome: string;
+    pipeline_id: number;
+    status_id: number;
+  }>({ id: 0, nome: "", pipeline_id: 0, status_id: 0 });
+  const [valid, setValid] = useState<boolean>(true);
 
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
+  const editFormRef = useRef<HTMLFormElement>(null);
+  const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getPortais();
     console.log("Portais:", data);
@@ -73,10 +92,6 @@ export default function Portais() {
     const cliente_nome = clientes.find(
       (cliente) => cliente.id === Number(clienteSelecionado)
     )?.nome;
-    console.log("Nome do cliente:", cliente_nome);
-    console.log("Cliente:", cliente_id);
-    console.log("Pipeline:", pipeline);
-    console.log("Status:", status);
 
     if (cliente_id || pipeline || status || cliente_nome) {
       const response = await cadastrarPortais({
@@ -99,6 +114,8 @@ export default function Portais() {
       modalRef.current?.close();
       setClienteSelecionado("");
       setPipelines([]);
+      setPipelineSelecionada("");
+      setStatus([]);
       setLoadingPipelines(false);
       toast.success(response.message);
     }
@@ -108,6 +125,7 @@ export default function Portais() {
     try {
       setClienteSelecionado(id_cliente);
       setPipelineSelecionada("");
+
       setStatus([]);
       setPipelines([]);
       setLoadingPipelines(true);
@@ -139,6 +157,7 @@ export default function Portais() {
   async function handleSearchPipeline(id_pipeline: SetStateAction<number>) {
     try {
       setLoadingStatus(true);
+      setStatusSelecionada("");
       setErrorMessage(null);
       console.log("ID do pipeline:", id_pipeline);
       const statusData = pipelines.find(
@@ -172,10 +191,50 @@ export default function Portais() {
     }
   }
 
+  async function handleEditPortal() {
+    if (!editFormRef.current) return;
+
+    const formData = new FormData(editFormRef.current);
+    const pipelineEdit = formData.get("pipelineEdit");
+    const statusEdit = formData.get("statusEdit");
+    const idEdit = editClienteSelecionado.id;
+
+    const response = await editarPortal(
+      idEdit,
+      Number(pipelineEdit),
+      Number(statusEdit)
+    );
+    console.log("Response da edição:", response);
+
+    if (!response.success) {
+      console.log("Erro ao editar:", response.message);
+      setErrorMessage(response.message || "Erro ao editar portal.");
+      return;
+    }
+
+    toast.success("Tintim editado com sucesso!");
+    fetchClientes();
+    setEditClienteSelecionado({
+      id: 0,
+      nome: "",
+      pipeline_id: 0,
+      status_id: 0,
+    });
+    setPipelineSelecionada("");
+    setStatusSelecionada("");
+    setStatus([]);
+    setPipelines([]);
+    setLoadingPipelines(false);
+    setClienteSelecionado("");
+    // Resetando o formulário e fechando o modal
+    setErrorMessage(null);
+    modalEditRef.current?.close();
+  }
+
   async function excluir(id: number) {
-    console.log("Excluindo portal:", id);
+  
     const response = await excluirClientePortais(id);
-    console.log("Resposta da exclusão:", response);
+   
     if (!response.success) {
       toast.error("Erro ao excluir pipeline.");
       return;
@@ -184,9 +243,65 @@ export default function Portais() {
 
     toast.success("Portal excluido com sucesso!");
   }
-  function buttonDelete(id: number) {
+
+  useEffect(() => {
+    validationEdit();
+  }, [pipelineSelecionada, statusSelecionada]);
+
+  function validationEdit() {
+
+    if (pipelineSelecionada === "" || statusSelecionada === "") {
+      setValid(true);
+    }
+    if (
+      editClienteSelecionado.pipeline_id === Number(pipelineSelecionada) &&
+      editClienteSelecionado.status_id === Number(statusSelecionada)
+    ) {
+      setValid(true);
+    } else {
+      setValid(false);
+    }
+  }
+  function buttons({
+    id,
+    nome,
+    pipeline_id,
+    status_id,
+    id_cliente,
+  }: {
+    id: number;
+    nome: string;
+    pipeline_id: number;
+    status_id: number;
+    id_cliente: number;
+  }) {
     return (
       <div className="flex gap-2 items-center justify-center">
+        <button
+          className="btn btn-neutral"
+          onClick={async () => {
+  
+            setEditClienteSelecionado({ id, nome, pipeline_id, status_id });
+            modalEditRef.current?.showModal();
+            const pipelinesCliente = await getPipelines(id_cliente);
+  
+            setPipelines(pipelinesCliente);
+            setPipelineSelecionada(String(pipeline_id));
+            const statusCliente = pipelinesCliente.find(
+              (pipeline: { id: number }) => pipeline.id === pipeline_id
+            );
+       
+            if (statusCliente) {
+              setStatus(statusCliente.status);
+            } else {
+              setStatus([]);
+            }
+            setStatusSelecionada(status_id.toString());
+            setLoadingPipelines(false);
+          }}
+        >
+          <FaEdit />
+        </button>
         <DeleteWarning onConfirm={() => excluir(id)} />
       </div>
     );
@@ -209,11 +324,25 @@ export default function Portais() {
           <Table
             columns={["Cliente", "Funil", "Status", "Ações"]}
             data={portaisData.map(
-              ({ id, nome, pipeline, status_pipeline }) => ({
+              ({
+                id,
+                nome,
+                pipeline,
+                status_pipeline,
+                pipeline_id,
+                status_id,
+                id_cliente,
+              }) => ({
                 Cliente: nome,
                 Funil: pipeline,
                 Status: status_pipeline,
-                Ações: buttonDelete(id),
+                Ações: buttons({
+                  id,
+                  nome,
+                  pipeline_id,
+                  status_id,
+                  id_cliente,
+                }),
               })
             )}
           />
@@ -269,14 +398,15 @@ export default function Portais() {
                       handleSearchPipeline(Number(e.target.value));
                       setErrorMessage(null);
                       setPipelineSelecionada(e.target.value);
+                      setStatusSelecionada("");
                     }}
                   >
                     <option value="" disabled>
-                      Selecione uma unidade
+                      Selecione um funil
                     </option>
                     {pipelines.map((pipeline) => (
                       <option key={pipeline.id} value={pipeline.id}>
-                        {pipeline.nome || ""}
+                        {pipeline.nome}
                       </option>
                     ))}
                   </select>
@@ -336,6 +466,119 @@ export default function Portais() {
                   setPipelineSelecionada("");
                   // Fechando o modal
                   modalRef.current?.close();
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+      <dialog ref={modalEditRef} className="modal">
+        <div className="modal-box">
+          <h2 className="text-lg font-bold mb-4">
+            <span className="text-primary">[ </span>
+            Editar Portal
+            <span className="text-primary"> ] </span>
+          </h2>
+          <form
+            ref={editFormRef}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleEditPortal();
+            }}
+            className="flex flex-col gap-4"
+          >
+            {/* Select de clientes */}
+            <input
+              name="clienteEdit"
+              type="text"
+              required
+              className="input input-bordered w-full focus:outline-none"
+              value={editClienteSelecionado.nome || ""}
+              readOnly
+            />
+
+            {/* Select de funil */}
+
+            {pipelines.length === 0 ? (
+              <div className="skeleton h-10 w-full rounded-md"></div>
+            ) : (
+              <>
+                <select
+                  name="pipelineEdit"
+                  required
+                  className="select select-bordered w-full focus:outline-none"
+                  value={pipelineSelecionada}
+                  onChange={(e) => {
+                    setPipelineSelecionada(e.target.value);
+                    handleSearchPipeline(Number(e.target.value));
+                  }}
+                >
+                  <option value="" disabled>
+                    Selecione um funil
+                  </option>
+
+                  {pipelines.map((pipe) => (
+                    <option key={pipe.id} value={pipe.id}>
+                      {pipe.nome}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  name="statusEdit"
+                  required
+                  className="select select-bordered w-full focus:outline-none"
+                  value={statusSelecionada}
+                  onChange={(e) => {
+                    setErrorMessage(null);
+                    setStatusSelecionada(e.target.value);
+                  }}
+                >
+                  <option value="" disabled>
+                    Selecione um status
+                  </option>
+                  {status.map((data) => (
+                    <option key={data.id} value={data.id}>
+                      {data.nome || ""}
+                    </option>
+                  ))}
+                </select>
+                {errorMessage && (
+                  <p className="text-red-500 text-sm text-center">
+                    {errorMessage}
+                  </p>
+                )}
+              </>
+            )}
+
+            <div className="modal-action">
+              <button
+                type="submit"
+                disabled={valid}
+                className="btn btn-success"
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  // Resetando os valores e fechando o modal
+                  setEditClienteSelecionado({
+                    id: 0,
+                    nome: "",
+                    pipeline_id: 0,
+                    status_id: 0,
+                  });
+                  modalEditRef.current?.close();
+                  setPipelineSelecionada("");
+                  setStatusSelecionada("");
+                  setStatus([]);
+                  setPipelines([]);
+                  setLoadingPipelines(false);
+                  setErrorMessage(null);
                 }}
               >
                 Cancelar

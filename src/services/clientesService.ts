@@ -38,7 +38,7 @@ export const getClientesPipeline = async (id: string | undefined) => {
     return [];
   }
 };
-export const getPipelines = async (id: string | undefined) => {
+export const getPipelines = async (id: number | undefined) => {
   try {
     const response = await api.get(`/cliente/listarPipelines/${id}`);
     return response.data.data;
@@ -267,6 +267,41 @@ export const editarTintim = async (
     const response = await api.put("/cliente/editarTintim/" + id, {
       nome,
       todas_unidades,
+    });
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Erro desconhecido na API",
+      };
+    } else {
+      return {
+        success: false,
+        message: "Erro inesperado. Verifique a conexão com a API.",
+      };
+    }
+  }
+};
+
+export const editarPortal = async (
+  id: number,
+  pipeline: number | null,
+  status_pipeline: number | null
+) => {
+  try {
+    if (pipeline === null || status_pipeline === null) {
+      return {
+        success: false,
+        message: "Pipeline e status_pipeline não podem ser nulos.",
+      };
+    }
+    const response = await api.put("/cliente/editarportal/" + id, {
+      pipeline,
+      status_pipeline,
     });
     return {
       success: true,
