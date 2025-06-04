@@ -9,7 +9,7 @@ interface TableProps {
 
 export default function Table({ columns, data }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 7;
+  const rowsPerPage = 20;
 
   // Cálculo da paginação
   const totalPages = Math.ceil(data.length / rowsPerPage);

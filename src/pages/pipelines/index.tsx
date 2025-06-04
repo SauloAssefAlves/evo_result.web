@@ -5,6 +5,7 @@ import {
   getPipelines,
   cadastrarClientePipeline,
   excluirClientePipeline,
+  getClientes,
 } from "../../services/clientesService";
 import Table from "../../components/Table";
 import DeleteWarning from "../../components/DeleteWarning";
@@ -12,6 +13,12 @@ import { toast } from "react-toastify";
 
 export default function Pipelines() {
   const { id } = useParams(); // Pegando o ID da URL
+  const [cliente, setCliente] = useState<{
+    id: number;
+    nome: string;
+    token: string;
+    automotivo: boolean;
+  } | null>(null); // Estado para o cliente
   const modalRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [selectedPipeline, setSelectedPipeline] = useState(""); // Estado para o select
@@ -33,8 +40,13 @@ export default function Pipelines() {
   useEffect(() => {
     const fetchClientes = async () => {
       if (!id) return;
+      const clienteData = await getClientes();
+      const clienteEncontrado = clienteData.find(
+        (cliente: { id: number }) => cliente.id === Number(id)
+      );
+      setCliente(clienteEncontrado || null);
       const data = await getClientesPipeline(id); // Convertendo id para número
-      const pipelinesData = await getPipelines(id);
+      const pipelinesData = await getPipelines(Number(id));
       console.log("Pipelines:", pipelinesData);
       setPipelines(pipelinesData);
       setPipelinesCadastradas(data);
@@ -99,7 +111,10 @@ export default function Pipelines() {
       {/* Conteúdo principal */}
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Lista de Pipelines</h1>
+          <h1 className="text-2xl font-bold">
+            Lista de Pipelines de{" "}
+            <span className="capitalize">{cliente?.nome}</span>
+          </h1>
           <button
             className="btn btn-primary text-neutral"
             onClick={() => modalRef.current?.showModal()}
