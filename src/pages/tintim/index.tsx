@@ -49,7 +49,7 @@ export default function Tintim() {
   const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getTintim();
- 
+
     setTintimData(data);
   };
   useEffect(() => {
@@ -81,9 +81,10 @@ export default function Tintim() {
     }
 
     const empresa_id = cliente;
-    const nome = unidade;
-    const todas_unidades = unidade === "todas";
 
+    const nome = unidade === "todas" ? cliente : unidade;
+    console.log("Nome do Tintim:", nome);
+    const todas_unidades = unidade === "todas";
 
     const response = await cadastrarTintim({
       empresa_id: Number(empresa_id),
@@ -114,19 +115,16 @@ export default function Tintim() {
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
+    const cliente = editCliente.cliente
     let unidade = formData.get("unidadeEdit");
 
     if (!unidade) {
       unidade = "todas";
     }
-
- 
-    const nome = unidade;
+    const nome = unidade === "todas" ? cliente : unidade;
     const todas_unidades = unidade === "todas";
 
-
     const response = await editarTintim(id, nome as string, todas_unidades);
-
 
     if (!response.success) {
       setErrorMessage(response.message || "Erro ao editar Tintim.");
@@ -236,8 +234,6 @@ export default function Tintim() {
               setLoadingUnidades(false);
               if (unidades.length === 0) {
                 setEditUnidades([]);
-
-            
               }
               setEditUnidades(unidades);
             }
