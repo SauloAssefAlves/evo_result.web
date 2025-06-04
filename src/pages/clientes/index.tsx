@@ -9,7 +9,8 @@ import {
   getClientes,
 } from "../../services/clientesService";
 import { FaFilter } from "react-icons/fa6";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaCheck } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
 import { useNavigate } from "react-router";
 
 import DeleteWarning from "../../components/DeleteWarning";
@@ -160,7 +161,11 @@ export default function Clientes() {
             columns={["Nome", "Automotivo", "Ações"]}
             data={clientes.map(({ nome, id, token, automotivo }) => ({
               Nome: nome,
-              Automotivo: automotivo ? "Sim" : "Não",
+              Automotivo: automotivo ? (
+                <FaCheck className="text-success text-xl" />
+              ) : (
+                <ImCross className="text-error" />
+              ),
               Ações: Buttons(id, nome, token, automotivo),
             }))}
           />
