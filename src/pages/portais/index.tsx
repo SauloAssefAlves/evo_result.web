@@ -31,7 +31,12 @@ export default function Portais() {
     {
       nome: string;
       id: number;
-      status: { id: number; nome: string; is_editable: boolean }[];
+      status: {
+        id: number;
+        nome: string;
+        is_editable: boolean;
+        type: number;
+      }[];
     }[]
   >([]);
   const [status, setStatus] = useState<
@@ -39,6 +44,7 @@ export default function Portais() {
       nome: string;
       id: number;
       is_editable: boolean;
+      type: number;
     }[]
   >([]);
   const [pipelineSelecionada, setPipelineSelecionada] = useState<string>("");
@@ -61,7 +67,6 @@ export default function Portais() {
   const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getPortais();
-    console.log("Portais:", data);
     setPortais(data);
   };
   useEffect(() => {
@@ -87,21 +92,29 @@ export default function Portais() {
     const formData = new FormData(formRef.current);
     const cliente_id = formData.get("cliente");
     const pipeline = formData.get("pipeline");
-    const status = formData.get("status");
+    const statusId = formData.get("status");
+
+    const statusSelelect = status.find((s) => s.id === Number(statusId));
+    if (!statusSelelect) {
+      setErrorMessage("Selecione um status válido.");
+      return;
+    }
+
 
     const cliente_nome = clientes.find(
       (cliente) => cliente.id === Number(clienteSelecionado)
     )?.nome;
 
-    if (cliente_id || pipeline || status || cliente_nome) {
+    if (cliente_id || pipeline || statusId || cliente_nome) {
       const response = await cadastrarPortais({
         cliente_id: Number(cliente_id),
         pipeline_id: Number(pipeline),
-        status_id: Number(status),
+        status_id: Number(statusId),
         nome: cliente_nome as string,
+        type: statusSelelect.type,
       });
 
-      console.log("Response:", response);
+
 
       if (!response.success) {
         console.log("Erro ao cadastrar:", response.message);
@@ -141,7 +154,7 @@ export default function Portais() {
 
       if (encontrado) {
         const pipelinesCliente = await getPipelines(encontrado.id);
-        console.log("Pipelines do cliente:", pipelinesCliente);
+
         setPipelines(pipelinesCliente);
       } else {
         setPipelines([]);
@@ -159,12 +172,11 @@ export default function Portais() {
       setLoadingStatus(true);
       setStatusSelecionada("");
       setErrorMessage(null);
-      console.log("ID do pipeline:", id_pipeline);
       const statusData = pipelines.find(
         (pipeline) => pipeline.id === id_pipeline
       )?.status;
 
-      console.log("Status do cliente:", statusData);
+
 
       if (!statusData) {
         setPipelines([]);
@@ -172,17 +184,7 @@ export default function Portais() {
         return;
       }
 
-      if (statusData) {
-        const statusFiltered = statusData.filter(
-          (status) => status.is_editable === true
-        );
-
-        console.log("Unidades do cliente:", statusFiltered);
-        console.log("filtered", statusFiltered);
-        setStatus(statusFiltered);
-      } else {
-        setPipelines([]);
-      }
+      setStatus(statusData);
 
       setLoadingStatus(false);
     } catch (error) {
@@ -198,13 +200,14 @@ export default function Portais() {
     const pipelineEdit = formData.get("pipelineEdit");
     const statusEdit = formData.get("statusEdit");
     const idEdit = editClienteSelecionado.id;
-
+    const statusType = status.find((s) => s.id === Number(statusEdit))?.type;
     const response = await editarPortal(
       idEdit,
       Number(pipelineEdit),
-      Number(statusEdit)
+      Number(statusEdit),
+      Number(statusType)
     );
-    console.log("Response da edição:", response);
+
 
     if (!response.success) {
       console.log("Erro ao editar:", response.message);
@@ -232,9 +235,8 @@ export default function Portais() {
   }
 
   async function excluir(id: number) {
-  
     const response = await excluirClientePortais(id);
-   
+
     if (!response.success) {
       toast.error("Erro ao excluir pipeline.");
       return;
@@ -249,7 +251,6 @@ export default function Portais() {
   }, [pipelineSelecionada, statusSelecionada]);
 
   function validationEdit() {
-
     if (pipelineSelecionada === "" || statusSelecionada === "") {
       setValid(true);
     }
@@ -280,17 +281,16 @@ export default function Portais() {
         <button
           className="btn btn-neutral"
           onClick={async () => {
-  
             setEditClienteSelecionado({ id, nome, pipeline_id, status_id });
             modalEditRef.current?.showModal();
             const pipelinesCliente = await getPipelines(id_cliente);
-  
+
             setPipelines(pipelinesCliente);
             setPipelineSelecionada(String(pipeline_id));
             const statusCliente = pipelinesCliente.find(
               (pipeline: { id: number }) => pipeline.id === pipeline_id
             );
-       
+
             if (statusCliente) {
               setStatus(statusCliente.status);
             } else {
@@ -306,12 +306,11 @@ export default function Portais() {
       </div>
     );
   }
-
   return (
     <div className="flex h-screen">
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Clientes com TinTim</h1>
+          <h1 className="text-2xl font-bold">Clientes com Portal</h1>
           <button
             className="btn btn-primary text-neutral"
             onClick={() => modalRef.current?.showModal()}

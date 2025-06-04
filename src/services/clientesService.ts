@@ -107,6 +107,7 @@ export const cadastrarPortais = async (body: {
   pipeline_id: number;
   status_id: number;
   nome: string;
+  type: number;
 }) => {
   try {
     const response = await api.post("/cliente/cadastrarPortais", body);
@@ -290,7 +291,8 @@ export const editarTintim = async (
 export const editarPortal = async (
   id: number,
   pipeline: number | null,
-  status_pipeline: number | null
+  status_pipeline: number | null,
+  status_type: number | null
 ) => {
   try {
     if (pipeline === null || status_pipeline === null) {
@@ -302,6 +304,7 @@ export const editarPortal = async (
     const response = await api.put("/cliente/editarportal/" + id, {
       pipeline,
       status_pipeline,
+      status_type
     });
     return {
       success: true,
