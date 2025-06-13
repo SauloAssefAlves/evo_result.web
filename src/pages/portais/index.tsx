@@ -12,6 +12,7 @@ import {
 } from "../../services/clientesService";
 import DeleteWarning from "../../components/DeleteWarning";
 import { FaEdit } from "react-icons/fa";
+import { ActionButton } from "../../components/ActionButton";
 
 export default function Portais() {
   const [portaisData, setPortais] = useState<
@@ -100,7 +101,6 @@ export default function Portais() {
       return;
     }
 
-
     const cliente_nome = clientes.find(
       (cliente) => cliente.id === Number(clienteSelecionado)
     )?.nome;
@@ -113,8 +113,6 @@ export default function Portais() {
         nome: cliente_nome as string,
         type: statusSelelect.type,
       });
-
-
 
       if (!response.success) {
         console.log("Erro ao cadastrar:", response.message);
@@ -176,8 +174,6 @@ export default function Portais() {
         (pipeline) => pipeline.id === id_pipeline
       )?.status;
 
-
-
       if (!statusData) {
         setPipelines([]);
         setLoadingPipelines(false);
@@ -207,7 +203,6 @@ export default function Portais() {
       Number(statusEdit),
       Number(statusType)
     );
-
 
     if (!response.success) {
       console.log("Erro ao editar:", response.message);
@@ -278,9 +273,8 @@ export default function Portais() {
   }) {
     return (
       <div className="flex gap-2 items-center justify-center">
-        <button
-          className="btn btn-neutral"
-          onClick={async () => {
+        <ActionButton
+          action={async () => {
             setEditClienteSelecionado({ id, nome, pipeline_id, status_id });
             modalEditRef.current?.showModal();
             const pipelinesCliente = await getPipelines(id_cliente);
@@ -299,16 +293,19 @@ export default function Portais() {
             setStatusSelecionada(status_id.toString());
             setLoadingPipelines(false);
           }}
-        >
-          <FaEdit />
-        </button>
+          label={<FaEdit />}
+        />
         <DeleteWarning onConfirm={() => excluir(id)} />
       </div>
     );
   }
   return (
-    <div className="flex h-screen">
-      <main className="flex-1 p-6">
+    <div className="flex h-full flex-col">
+      {" "}
+      {/* Alterado para flex-col */}
+      <main className="flex-1 overflow-auto">
+        {" "}
+        {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Clientes com Portal</h1>
           <button
@@ -318,7 +315,6 @@ export default function Portais() {
             + Adicionar Portal
           </button>
         </div>
-
         <div className="overflow-x-auto">
           <Table
             columns={["Cliente", "Funil", "Status", "Ações"]}
@@ -335,7 +331,7 @@ export default function Portais() {
                 Cliente: nome,
                 Funil: pipeline,
                 Status: status_pipeline,
-                Ações: buttons({
+                Acoes: buttons({
                   id,
                   nome,
                   pipeline_id,
@@ -347,7 +343,6 @@ export default function Portais() {
           />
         </div>
       </main>
-
       <dialog ref={modalRef} className="modal ">
         <div className="modal-box  ">
           <h2 className="text-lg font-bold mb-4">

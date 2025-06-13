@@ -10,8 +10,10 @@ import {
   excluirClienteTintim,
   editarTintim,
 } from "../../services/clientesService";
-import { FaCopy, FaEdit } from "react-icons/fa";
+import { FaCopy, FaEdit, FaInfo } from "react-icons/fa";
 import DeleteWarning from "../../components/DeleteWarning";
+import { ActionButton } from "../../components/ActionButton";
+import { useNavigate } from "react-router";
 
 export default function Tintim() {
   const [tintimData, setTintimData] = useState<
@@ -43,7 +45,7 @@ export default function Tintim() {
     { id: string; value: string }[]
   >([]);
   const [editUnidadeSelecionada, setEditUnidadeSelecionada] = useState("");
-
+  const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
   const modalEditRef = useRef<HTMLDialogElement>(null);
@@ -115,7 +117,7 @@ export default function Tintim() {
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
-    const cliente = editCliente.cliente
+    const cliente = editCliente.cliente;
     let unidade = formData.get("unidadeEdit");
 
     if (!unidade) {
@@ -183,10 +185,8 @@ export default function Tintim() {
   function buttons(id: number, unidade_formatada: string) {
     return (
       <div className="flex gap-2 items-center justify-center">
-        <button
-          className="btn btn-neutral "
-          onClick={() => {
-            // Função para deletar o tintim
+        <ActionButton
+          action={() => {
             navigator.clipboard
               .writeText(
                 "http://89.116.186.230:1212/tintimWebhook/" + unidade_formatada
@@ -202,12 +202,10 @@ export default function Tintim() {
                 toast.error("Erro ao copiar o link.");
               });
           }}
-        >
-          <FaCopy />
-        </button>
-        <button
-          className="btn btn-neutral"
-          onClick={async () => {
+          label={<FaCopy />}
+        />
+        <ActionButton
+          action={async () => {
             setLoadingUnidades(true);
             const clienteSelecionadoTintim = tintimData.find(
               (tintim) => tintim.id === id
@@ -238,9 +236,8 @@ export default function Tintim() {
               setEditUnidades(unidades);
             }
           }}
-        >
-          <FaEdit />
-        </button>
+          label={<FaEdit />}
+        ></ActionButton>
         <DeleteWarning onConfirm={() => excluirTintim(Number(id))} />
       </div>
     );
@@ -253,18 +250,31 @@ export default function Tintim() {
   }
 
   return (
-    <div className="flex h-screen">
-      <main className="flex-1 p-6">
+    <div className="flex h-full flex-col">
+      {" "}
+      {/* Alterado para flex-col */}
+      <main className="flex-1 overflow-auto">
+        {" "}
+        {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Clientes com TinTim</h1>
-          <button
-            className="btn btn-primary text-neutral"
-            onClick={() => modalRef.current?.showModal()}
-          >
-            + Adicionar Tintim
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="btn btn-neutral btn-circle text-info"
+              onClick={() => {
+                navigate("/dashboard/tintim/monitoramento");
+              }}
+            >
+              <FaInfo />
+            </button>
+            <button
+              className="btn btn-primary text-neutral"
+              onClick={() => modalRef.current?.showModal()}
+            >
+              + Adicionar Tintim
+            </button>
+          </div>
         </div>
-
         <div className="overflow-x-auto">
           <Table
             columns={["Cliente", "Unidade", "Ações"]}
@@ -272,7 +282,7 @@ export default function Tintim() {
               ({ id, cliente, todas_unidades, unidade_formatada }) => ({
                 Cliente: cliente,
                 Unidade: todas_unidades ? "Todas" : unidade_formatada,
-                Ações: buttons(id, unidade_formatada),
+                Acoes: buttons(id, unidade_formatada),
               })
             )}
           />
@@ -370,7 +380,6 @@ export default function Tintim() {
           </form>
         </div>
       </dialog>
-
       <dialog ref={modalEditRef} className="modal">
         <div className="modal-box">
           <h2 className="text-lg font-bold mb-4">

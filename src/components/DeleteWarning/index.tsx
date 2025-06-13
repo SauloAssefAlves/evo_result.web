@@ -1,6 +1,5 @@
 import { FaTrash } from "react-icons/fa";
 
-
 interface DeleteWarningProps {
   onConfirm: () => void;
 }
@@ -15,7 +14,10 @@ export default function DeleteWarning({ onConfirm }: DeleteWarningProps) {
 
   return (
     <>
-      <button className="btn btn-neutral" onClick={openModal}>
+      <button
+        className="btn btn-neutral border-0 hover:bg-error hover:text-error-content"
+        onClick={openModal}
+      >
         <FaTrash />
       </button>
       <dialog ref={modalRef} className="modal">

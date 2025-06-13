@@ -107,9 +107,12 @@ export default function Pipelines() {
   }
 
   return (
-    <div className="flex h-screen">
-      {/* Conteúdo principal */}
-      <main className="flex-1 p-6">
+    <div className="flex h-full flex-col">
+      {" "}
+      {/* Alterado para flex-col */}
+      <main className="flex-1 overflow-auto">
+        {" "}
+        {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">
             Lista de Pipelines de{" "}
@@ -122,19 +125,17 @@ export default function Pipelines() {
             + Adicionar Pipeline
           </button>
         </div>
-
         {/* Tabela */}
         <div className="overflow-x-auto">
           <Table
             columns={["Nome", "Ações"]}
             data={pipelinesCadastradas.map(({ nome, id }) => ({
               Nome: nome,
-              Ações: buttons(id),
+              Acoes: buttons(id),
             }))}
           />
         </div>
       </main>
-
       {/* Modal de Adicionar Pipeline */}
       <dialog
         ref={modalRef}

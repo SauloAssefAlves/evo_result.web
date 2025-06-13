@@ -12,6 +12,7 @@ import { FaFilter } from "react-icons/fa6";
 import { FaEdit, FaCheck } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { useNavigate } from "react-router";
+import { ActionButton } from "../../components/ActionButton";
 
 import DeleteWarning from "../../components/DeleteWarning";
 
@@ -61,23 +62,19 @@ export default function Clientes() {
   ) {
     return (
       <div className="flex gap-2 items-center justify-center">
-        <button
-          className="btn btn-neutral"
-          onClick={() => {
+        <ActionButton
+          action={() => {
             setEditClient({ id, nome, token, automotivo });
             modalEditRef.current?.showModal();
           }}
-        >
-          <FaEdit />
-        </button>
-        <button
-          className="btn btn-neutral"
-          onClick={() => {
+          label={<FaEdit />}
+        />
+        <ActionButton
+          action={() => {
             navigate(`/dashboard/clientes/${id}/pipelines`); // Redireciona para a página do cliente
           }}
-        >
-          <FaFilter />
-        </button>
+          label={<FaFilter />}
+        />
         <DeleteWarning onConfirm={() => excluir(id)} />
       </div>
     );
@@ -142,9 +139,12 @@ export default function Clientes() {
     modalEditRef.current?.close();
   };
   return (
-    <div className="flex h-screen">
-      {/* Conteúdo principal */}
-      <main className="flex-1 p-6">
+    <div className="flex h-full flex-col">
+      {" "}
+      {/* Alterado para flex-col */}
+      <main className="flex-1 overflow-auto">
+        {" "}
+        {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Lista de Clientes</h1>
           <button
@@ -154,7 +154,6 @@ export default function Clientes() {
             + Adicionar Cliente
           </button>
         </div>
-
         {/* Tabela */}
         <div className="overflow-x-auto">
           <Table
@@ -162,16 +161,15 @@ export default function Clientes() {
             data={clientes.map(({ nome, id, token, automotivo }) => ({
               Nome: nome,
               Automotivo: automotivo ? (
-                <FaCheck className="text-success text-xl" />
+                <FaCheck className="text-success text-xl " />
               ) : (
                 <ImCross className="text-error" />
               ),
-              Ações: Buttons(id, nome, token, automotivo),
+              Acoes: Buttons(id, nome, token, automotivo),
             }))}
           />
         </div>
       </main>
-
       {/* Modal de Adicionar Cliente */}
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
@@ -253,7 +251,6 @@ export default function Clientes() {
         </div>
       </dialog>
       {/* Modal de Editar Cliente */}
-
       <dialog ref={modalEditRef} className="modal">
         <div className="modal-box">
           <h2 className="text-lg font-bold mb-4">
