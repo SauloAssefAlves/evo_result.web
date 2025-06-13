@@ -27,6 +27,29 @@ interface TintimData {
   midia: string;
 }
 
+function formatDateWithTimezone(data_criacao: string | number | Date) {
+  // Cria um objeto Date e adiciona 3 horas
+  const data = new Date(data_criacao);
+  data.setHours(data.getHours() + 3);
+
+  // Formata a data no padrão brasileiro
+  const dataFormatada = data.toLocaleDateString("pt-BR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  // Formata a hora no padrão brasileiro (24h)
+  const horaFormatada = data.toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  // Retorna no formato "dd/mm/aaaa hh:mm +0300"
+  return `${dataFormatada} ${horaFormatada}`;
+}
+
 export default function MonitoramentoTintim() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<TintimData[]>([]);
@@ -146,17 +169,7 @@ export default function MonitoramentoTintim() {
                 Conjunto: nome_conjunto || "N/A",
                 Origem: source || "N/A",
                 Midia: midia || "N/A",
-                DataCriacao:
-                  new Date(data_criacao).toLocaleDateString("pt-BR", {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                  }) +
-                  " " +
-                  new Date(data_criacao).toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
+                DataCriacao: formatDateWithTimezone(data_criacao) || "N/A",
                 Integrado: integrado ? (
                   <FaCheck className="text-success text-xl" />
                 ) : (
