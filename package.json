@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "install": "npm ci",
+    "install": "npm i",
     "dev": "vite --force",
     "build": "vite build",
     "start": "vite preview --port 4173",
