@@ -69,6 +69,7 @@ export default function Portais() {
   const fetchClientes = async () => {
     const data = await getPortais();
     setPortais(data);
+    console.log("Portais data:", data);
   };
   useEffect(() => {
     fetchClientes();
