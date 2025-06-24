@@ -13,6 +13,7 @@ import {
 import DeleteWarning from "../../components/DeleteWarning";
 import { FaEdit } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
+import { formatDateWithoutTimezone } from "../../utils/dateFormater";
 
 export default function Portais() {
   const [portaisData, setPortais] = useState<
@@ -24,6 +25,7 @@ export default function Portais() {
       pipeline_id: number;
       status_id: number;
       id_cliente: number;
+      data_ultimo_lead: string;
     }[]
   >([]);
   const [clientes, setClientes] = useState<{ id: number; nome: string }[]>([]);
@@ -73,6 +75,7 @@ export default function Portais() {
   };
   useEffect(() => {
     fetchClientes();
+    console.log("Portais fetched:", portaisData);
   }, []);
 
   useEffect(() => {
@@ -318,7 +321,7 @@ export default function Portais() {
         </div>
         <div className="overflow-x-auto">
           <Table
-            columns={["Cliente", "Funil", "Status", "Ações"]}
+            columns={["Cliente", "Funil", "Status", "Último Lead", "Ações"]}
             data={portaisData.map(
               ({
                 id,
@@ -328,10 +331,12 @@ export default function Portais() {
                 pipeline_id,
                 status_id,
                 id_cliente,
+                data_ultimo_lead,
               }) => ({
                 Cliente: nome,
                 Funil: pipeline,
                 Status: status_pipeline,
+                UltimoLead: formatDateWithoutTimezone(data_ultimo_lead),
                 Acoes: buttons({
                   id,
                   nome,

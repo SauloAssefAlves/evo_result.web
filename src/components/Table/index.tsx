@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TableProps {
@@ -31,7 +31,7 @@ export default function Table({ columns, data }: TableProps) {
           {" "}
           {/* Aumentei a largura mínima */}
           {/* Cabeçalho */}
-          <div className="flex bg-neutral text-white font-semibold text-lg">
+          <div className="flex bg-neutral text-white font-bold text-sm rounded-t-lg ">
             {columns.map((col, index) => (
               <div
                 key={index}
@@ -42,7 +42,7 @@ export default function Table({ columns, data }: TableProps) {
             ))}
           </div>
           {/* Corpo */}
-          <div className="flex flex-col border border-gray-200">
+          <div className="flex flex-col border border-gray-200 text-sm font-semibold">
             {currentData.length > 0 ? (
               currentData.map((row, rowIndex) => (
                 <div
@@ -76,33 +76,42 @@ export default function Table({ columns, data }: TableProps) {
       {/* Footer (paginação) */}
       <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
         <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center w-full">
-              {currentPage > 1 ? (
+            <div className="flex justify-between items-center w-full">
+            {/* Botões e paginação centralizados */}
+            <div className="flex justify-center items-center flex-1">
+              {totalPages > 1 && (
+              <>
+                {currentPage > 1 ? (
                 <button
                   className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
                   onClick={() => setCurrentPage((prev) => prev - 1)}
                 >
                   <FaChevronLeft />
                 </button>
-              ) : (
+                ) : (
                 <div className="w-9" />
-              )}
-              <span className="font-semibold text-lg text-white mx-6">
+                )}
+                <span className="font-semibold text-lg text-white mx-6">
                 {currentPage} de {totalPages}
-              </span>
-              {currentPage < totalPages ? (
+                </span>
+                {currentPage < totalPages ? (
                 <button
                   className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
                   onClick={() => setCurrentPage((prev) => prev + 1)}
                 >
                   <FaChevronRight />
                 </button>
-              ) : (
+                ) : (
                 <div className="w-8" />
+                )}
+              </>
               )}
             </div>
-          )}
+            {/* Span "Olho" alinhado à direita */}
+            <span className="text-white text-sm ml-4 flex items-center gap-1">
+              <FaEye/> {currentData.length} 
+            </span>
+            </div>
         </div>
       </div>
     </div>
@@ -112,17 +121,17 @@ export default function Table({ columns, data }: TableProps) {
 // Função para determinar larguras específicas
 function getColumnWidth(columnName: string): string {
   const widths: Record<string, string> = {
-    'Telefone': 'w-[150px]',
-    'Anúncio': 'w-[120px]',
-    'Campanha': 'w-[180px]',
-    'Conjunto': 'w-[150px]',
-    'Origem': 'w-[120px]',
-    'Mídia': 'w-[100px]',
-    'Data': 'w-[120px]',
-    'Integrado': 'w-[120px]',
-    'Criação': 'w-[120px]'
+    Telefone: "w-[150px]",
+    Anúncio: "w-[120px]",
+    Campanha: "w-[180px]",
+    Conjunto: "w-[150px]",
+    Origem: "w-[120px]",
+    Mídia: "w-[100px]",
+    Data: "w-[120px]",
+    Integrado: "w-[120px]",
+    Criação: "w-[120px]",
   };
-  return widths[columnName] || 'flex-1';
+  return widths[columnName] || "flex-1";
 }
 
 // Função para formatar conteúdo complexo
