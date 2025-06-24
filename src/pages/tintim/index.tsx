@@ -14,6 +14,7 @@ import { FaCopy, FaEdit, FaInfo } from "react-icons/fa";
 import DeleteWarning from "../../components/DeleteWarning";
 import { ActionButton } from "../../components/ActionButton";
 import { useNavigate } from "react-router";
+import { formatDateWithoutTimezone } from "../../utils/dateFormater";
 
 export default function Tintim() {
   const [tintimData, setTintimData] = useState<
@@ -23,6 +24,7 @@ export default function Tintim() {
       todas_unidades: boolean;
       unidade: string;
       unidade_formatada: string;
+      data_ultimo_tintim: string;
     }[]
   >([]);
   const [clientes, setClientes] = useState<
@@ -56,6 +58,7 @@ export default function Tintim() {
   };
   useEffect(() => {
     fetchClientes();
+    console.log("Tintim data fetched:", tintimData);
   }, []);
 
   useEffect(() => {
@@ -277,11 +280,18 @@ export default function Tintim() {
         </div>
         <div className="overflow-x-auto">
           <Table
-            columns={["Cliente", "Unidade", "Ações"]}
+            columns={["Cliente", "Unidade", "Último Tintim", "Ações"]}
             data={tintimData.map(
-              ({ id, cliente, todas_unidades, unidade_formatada }) => ({
+              ({
+                id,
+                cliente,
+                todas_unidades,
+                unidade_formatada,
+                data_ultimo_tintim,
+              }) => ({
                 Cliente: cliente,
                 Unidade: todas_unidades ? "Todas" : unidade_formatada,
+                UltimoTintim: formatDateWithoutTimezone(data_ultimo_tintim),
                 Acoes: buttons(id, unidade_formatada),
               })
             )}
