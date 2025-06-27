@@ -104,6 +104,18 @@ export const getMonitoramentoTintim = async (id: string = "") => {
   }
 };
 
+export const getMonitoramentoPortais = async (id: string = "") => {
+  try {
+    console.log(id);
+    const response = await api.get(`/cliente/listarMonitoamentoPortais/${id}`);
+    console.log("Dados do monitoramento Portais:", response.data);
+    return response.data.data; // Retorna a lista de clientes
+  } catch (error) {
+    console.error("Erro ao buscar monitoramento tintim:", error);
+    return [];
+  }
+};
+
 export const getPortais = async () => {
   try {
     const response = await api.get("/cliente/listarPortais");

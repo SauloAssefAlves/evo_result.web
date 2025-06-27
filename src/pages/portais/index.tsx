@@ -11,9 +11,10 @@ import {
   editarPortal,
 } from "../../services/clientesService";
 import DeleteWarning from "../../components/DeleteWarning";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaAlignRight } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
 import { formatDateWithoutTimezone } from "../../utils/dateFormater";
+import { useNavigate } from "react-router";
 
 export default function Portais() {
   const [portaisData, setPortais] = useState<
@@ -63,7 +64,7 @@ export default function Portais() {
     status_id: number;
   }>({ id: 0, nome: "", pipeline_id: 0, status_id: 0 });
   const [valid, setValid] = useState<boolean>(true);
-
+  const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
   const editFormRef = useRef<HTMLFormElement>(null);
@@ -312,12 +313,22 @@ export default function Portais() {
         {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Clientes com Portal</h1>
-          <button
-            className="btn btn-primary text-neutral"
-            onClick={() => modalRef.current?.showModal()}
-          >
-            + Adicionar Portal
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="btn btn-primary text-neutral"
+              onClick={() => {
+                navigate("/dashboard/portais/monitoramento");
+              }}
+            >
+              <FaAlignRight className="w-4 h-4" />
+            </button>
+            <button
+              className="btn btn-primary text-neutral"
+              onClick={() => modalRef.current?.showModal()}
+            >
+              + Adicionar Portal
+            </button>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <Table
