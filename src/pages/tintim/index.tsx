@@ -10,7 +10,7 @@ import {
   excluirClienteTintim,
   editarTintim,
 } from "../../services/clientesService";
-import { FaCopy, FaEdit, FaInfo } from "react-icons/fa";
+import { FaCopy, FaEdit, FaAlignRight } from "react-icons/fa";
 import DeleteWarning from "../../components/DeleteWarning";
 import { ActionButton } from "../../components/ActionButton";
 import { useNavigate } from "react-router";
@@ -263,12 +263,12 @@ export default function Tintim() {
           <h1 className="text-2xl font-bold">Clientes com TinTim</h1>
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-neutral btn-circle text-info"
+              className="btn btn-primary text-neutral"
               onClick={() => {
                 navigate("/dashboard/tintim/monitoramento");
               }}
             >
-              <FaInfo />
+              <FaAlignRight className="w-4 h-4"/>
             </button>
             <button
               className="btn btn-primary text-neutral"

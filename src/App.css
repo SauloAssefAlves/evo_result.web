@@ -50,12 +50,16 @@ input[type="number"] {
 }
 
 .react-datepicker-wrapper, 
-.react-datepicker__input-container {
+.react-datepicker__input-container,
+input[type="date"],
+input[type="date-range"] {
   display: block !important;
   width: 100% !important;
 }
 
-.react-datepicker__input-container input {
+.react-datepicker__input-container input,
+input[type="date"],
+input[type="date-range"] {
   width: 100% !important;
 }
 
