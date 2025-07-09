@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -18,6 +18,11 @@ function formatarTexto(texto: string) {
 export default function Table({ columns, data }: TableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 20;
+
+  useEffect(() => {
+    // Resetar a página atual para 1 quando os dados mudarem
+    setCurrentPage(1);
+  }, [data]);
 
   // Cálculo da paginação
   const totalPages = Math.ceil(data.length / rowsPerPage);
@@ -76,42 +81,42 @@ export default function Table({ columns, data }: TableProps) {
       {/* Footer (paginação) */}
       <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
         <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
-            <div className="flex justify-between items-center w-full">
+          <div className="flex justify-between items-center w-full">
             {/* Botões e paginação centralizados */}
             <div className="flex justify-center items-center flex-1">
               {totalPages > 1 && (
-              <>
-                {currentPage > 1 ? (
-                <button
-                  className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
-                >
-                  <FaChevronLeft />
-                </button>
-                ) : (
-                <div className="w-9" />
-                )}
-                <span className="font-semibold text-lg text-white mx-6">
-                {currentPage} de {totalPages}
-                </span>
-                {currentPage < totalPages ? (
-                <button
-                  className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
-                >
-                  <FaChevronRight />
-                </button>
-                ) : (
-                <div className="w-8" />
-                )}
-              </>
+                <>
+                  {currentPage > 1 ? (
+                    <button
+                      className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                    >
+                      <FaChevronLeft />
+                    </button>
+                  ) : (
+                    <div className="w-9" />
+                  )}
+                  <span className="font-semibold text-lg text-white mx-6">
+                    {currentPage} de {totalPages}
+                  </span>
+                  {currentPage < totalPages ? (
+                    <button
+                      className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                    >
+                      <FaChevronRight />
+                    </button>
+                  ) : (
+                    <div className="w-8" />
+                  )}
+                </>
               )}
             </div>
             {/* Span "Olho" alinhado à direita */}
             <span className="text-white text-sm ml-4 flex items-center gap-1">
-              <FaEye/> {currentData.length} 
+              <FaEye /> {currentData.length}
             </span>
-            </div>
+          </div>
         </div>
       </div>
     </div>

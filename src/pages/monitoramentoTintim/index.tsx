@@ -25,7 +25,7 @@ interface TintimData {
   nome_conjunto: string;
   data_criacao: string;
   integrado: boolean;
-  source: string;
+  origem: string;
   midia: string;
 }
 
@@ -81,6 +81,11 @@ export default function MonitoramentoTintim() {
     { label: "Empresa", type: "select", options: optionsEmpresas },
     { label: "Nome", type: "text" },
     { label: "Telefone", type: "number" },
+    { label: "Anúncio", type: "text" },
+    { label: "Campanha", type: "text" },
+    { label: "Conjunto", type: "text" },
+    { label: "Origem", type: "text" },
+    { label: "Mídia", type: "text" },
     { label: "data_criacao", type: "date-range" },
     {
       label: "Integrado",
@@ -98,6 +103,11 @@ export default function MonitoramentoTintim() {
       !filterData.Empresa &&
       !filterData.Nome &&
       !filterData.Telefone &&
+      !filterData["Anúncio"] &&
+      !filterData.Campanha &&
+      !filterData.Conjunto &&
+      !filterData.Origem &&
+      !filterData["Mídia"] &&
       filterData.Integrado === undefined &&
       !filterData.data_criacao
     ) {
@@ -143,6 +153,26 @@ export default function MonitoramentoTintim() {
           telefoneFormaterWithoutMask(item.telefone).includes(
             filterData.Telefone
           )) &&
+        (!filterData["Anúncio"] ||
+          item.nome_anuncio
+            ?.toLowerCase()
+            .includes(filterData["Anúncio"].toLowerCase())) &&
+        (!filterData.Campanha ||
+          item.nome_campanha
+            ?.toLowerCase()
+            .includes(filterData.Campanha.toLowerCase())) &&
+        (!filterData.Conjunto ||
+          item.nome_conjunto
+            ?.toLowerCase()
+            .includes(filterData.Conjunto.toLowerCase())) &&
+        (!filterData.Origem ||
+          item.origem
+            ?.toLowerCase()
+            .includes(filterData.Origem.toLowerCase())) &&
+        (!filterData["Mídia"] ||
+          item.midia
+            ?.toLowerCase()
+            .includes(filterData["Mídia"].toLowerCase())) &&
         dataCriacaoMatch &&
         integradoMatch
       );
@@ -150,7 +180,6 @@ export default function MonitoramentoTintim() {
     setTintimData(filteredData);
     console.log("Dados filtrados:", filteredData);
   }
-
   return (
     <div className="flex h-full flex-col">
       {" "}
@@ -172,11 +201,11 @@ export default function MonitoramentoTintim() {
               "Empresa",
               "Nome",
               "Telefone",
-              "Anúncio",
               "Campanha",
               "Conjunto",
-              "Origem",
+              "Anúncio",
               "Mídia",
+              "Origem",
               "Data Criação",
               "Integrado",
               "Causa",
@@ -189,7 +218,7 @@ export default function MonitoramentoTintim() {
                 nome_anuncio,
                 nome_campanha,
                 nome_conjunto,
-                source,
+                origem,
                 midia,
                 data_criacao,
                 integrado,
@@ -201,7 +230,7 @@ export default function MonitoramentoTintim() {
                 Anuncio: nome_anuncio || "N/A",
                 Campanha: nome_campanha || "N/A",
                 Conjunto: nome_conjunto || "N/A",
-                Origem: source || "N/A",
+                Origem: origem || "N/A",
                 Midia: midia || "N/A",
                 DataCriacao: formatDateWithTimezone(data_criacao) || "N/A",
                 Integrado: integrado ? (

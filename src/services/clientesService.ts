@@ -97,7 +97,7 @@ export const getMonitoramentoTintim = async (id: string = "") => {
     console.log(id);
     const response = await api.get(`/cliente/listarMonitoamentoTintim/${id}`);
     console.log("Dados do monitoramento Tintim:", response.data);
-    return response.data.data; // Retorna a lista de clientes
+    return response.data.data; 
   } catch (error) {
     console.error("Erro ao buscar monitoramento tintim:", error);
     return [];

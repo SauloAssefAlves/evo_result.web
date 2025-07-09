@@ -20,12 +20,13 @@ const Filter = <T extends Record<string, unknown>>({
   inputs,
 }: FilterProps<T>) => {
   const { register, handleSubmit, control } = useForm<T>();
+  
 
   const renderInputs = () =>
     inputs.map((input) => {
       if (input.type === "date-range") {
         return (
-          <div key={input.label as string} className="min-w-[300px] flex-1">
+          <div key={input.label as string} className="min-w-[300px] ">
             <Controller
               name={input.label}
               control={control}
@@ -35,7 +36,7 @@ const Filter = <T extends Record<string, unknown>>({
                   ? field.value
                   : [null, null];
                 return (
-                  <div className="w-full flex items-center relative">
+                  <div className="flex items-center relative">
                     <DatePicker
                       clearButtonClassName="!hidden"
                       selectsRange
