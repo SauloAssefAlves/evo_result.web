@@ -15,6 +15,7 @@ import DeleteWarning from "../../components/DeleteWarning";
 import { ActionButton } from "../../components/ActionButton";
 import { useNavigate } from "react-router";
 import { formatDateWithoutTimezone } from "../../utils/dateFormater";
+import Filter, { FilterInput } from "../../components/Filter";
 
 export default function Tintim() {
   const [tintimData, setTintimData] = useState<
@@ -47,12 +48,28 @@ export default function Tintim() {
     { id: string; value: string }[]
   >([]);
   const [editUnidadeSelecionada, setEditUnidadeSelecionada] = useState("");
+  const [optionsEmpresas, setOptionsEmpresas] = useState<
+    { label: string; value: string }[]
+  >([]);
+
+  const [data, setData] = useState<
+    {
+      cliente: string;
+      id: number;
+      todas_unidades: boolean;
+      unidade: string;
+      unidade_formatada: string;
+      data_ultimo_tintim: string;
+    }[]
+  >([]);
+
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
   const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getTintim();
+    setData(data);
 
     setTintimData(data);
   };
@@ -65,10 +82,18 @@ export default function Tintim() {
     const fetchTodosClientes = async () => {
       setLoadingClientes(true);
       const clientesData = await getClientes();
+      console.log("Clientes data fetched:", clientesData);
       setClientes(clientesData);
+      setOptionsEmpresas(
+        clientesData.map((clientes: { nome: any }) => ({
+          label: clientes.nome,
+          value: clientes.nome,
+        }))
+      );
+
       setLoadingClientes(false);
     };
-
+    console.log("Options Empresas:", optionsEmpresas);
     fetchTodosClientes();
   }, []);
 
@@ -252,6 +277,64 @@ export default function Tintim() {
     return false;
   }
 
+  const inputs: FilterInput[] = [
+    {
+      label: "Cliente TinTim",
+      type: "select",
+      name: "cliente",
+      options: optionsEmpresas,
+    },
+    {
+      label: "Último Tintim",
+      type: "date-range",
+      name: "periodo",
+    },
+  ];
+
+  function handleFilterSubmit(filterData: Record<string, string>) {
+    if (
+      (!filterData.cliente || filterData.cliente === "") &&
+      (!filterData.periodo ||
+        filterData.periodo === "" ||
+        (Array.isArray(filterData.periodo) && filterData.periodo.length === 0))
+    ) {
+      fetchClientes();
+      // Recarrega todos os dados
+      return;
+    }
+
+    let filtered = [...data];
+
+    // Filtro por cliente (case insensitive)
+    if (filterData.cliente && filterData.cliente !== "") {
+      filtered = filtered.filter(
+        (item) =>
+          item.cliente &&
+          item.cliente.toLowerCase().includes(filterData.cliente.toLowerCase())
+      );
+    }
+
+    // Filtro por período (date-range)
+    if (
+      filterData.periodo &&
+      Array.isArray(filterData.periodo) &&
+      filterData.periodo.length === 2 &&
+      filterData.periodo[0] &&
+      filterData.periodo[1]
+    ) {
+      const [start, end] = filterData.periodo as unknown as [string, string];
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.data_ultimo_tintim);
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    }
+    console.log("Dados filtrados:", filtered);
+    setTintimData(filtered);
+  }
+
   return (
     <div className="flex h-full flex-col">
       {" "}
@@ -268,7 +351,7 @@ export default function Tintim() {
                 navigate("/dashboard/tintim/monitoramento");
               }}
             >
-              <FaAlignRight className="w-4 h-4"/>
+              <FaAlignRight className="w-4 h-4" />
             </button>
             <button
               className="btn btn-primary text-neutral"
@@ -277,6 +360,10 @@ export default function Tintim() {
               + Adicionar Tintim
             </button>
           </div>
+        </div>
+        <div className="w-full">
+          {" "}
+          <Filter onSubmit={handleFilterSubmit} inputs={inputs} />
         </div>
         <div className="overflow-x-auto">
           <Table

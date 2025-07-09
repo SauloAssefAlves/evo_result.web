@@ -8,9 +8,10 @@ import {
   telefoneFormater,
   telefoneFormaterWithoutMask,
 } from "../../utils/telefoneFormater.js";
-import Filter from "../../components/Filter/index.js";
+import Filter, {FilterInput} from "../../components/Filter/index.js";
 import { formatDateWithoutTimezone } from "../../utils/dateFormater.js";
 import { getPortais } from "../../services/clientesService.js";
+import { parseISO } from "date-fns";
 
 interface PortaisData {
   nome: string;
@@ -75,30 +76,31 @@ export default function MonitoramentoPotais() {
   useEffect(() => {
     fetchClientes();
   }, []);
-  const inputs = [
+  const inputs: FilterInput[] = [
     {
       label: "Empresa",
+      name: "Empresa",
       type: "select",
       options: optionsEmpresas,
-      placehold: "Selecione a Empresa...",
     },
-    { label: "Nome", type: "text" },
-    { label: "Telefone", type: "number" },
-    { label: "data_criacao", type: "date" },
-
-    { label: "Midia", type: "text" },
-    { label: "Origem", type: "text" },
+    { label: "Nome", name: "Nome", type: "text" },
+    { label: "Telefone", name: "Telefone", type: "number" },
+    { label: "Midia", name: "Midia", type: "text" },
+    { label: "Origem", name: "Origem", type: "text" },
+    { label: "Valor", name: "Valor", type: "number" },
+    { label: "Data Criacão", name: "data_criacao", type: "date-range" },
     {
       label: "Integrado",
+      name: "Integrado",
       type: "radio",
       options: [
-        { label: "Integrado", value: "true" },
-        { label: "Não integrado", value: "false" },
+        { label: "Sim", value: "true" },
+        { label: "Não", value: "false" },
       ],
     },
   ];
 
-  function handleFilterSubmit(filterData: Record<string, string>) {
+  function handleFilterSubmit(filterData: Record<string, any>) {
     console.log("Dados do filtro:", filterData);
     if (
       !filterData.Empresa &&
@@ -107,7 +109,8 @@ export default function MonitoramentoPotais() {
       !filterData.data_criacao &&
       filterData.Integrado === undefined &&
       !filterData.Midia &&
-      !filterData.Origem
+      !filterData.Origem &&
+      !filterData.Valor
     ) {
       setPortaisData(data);
       console.log("Nenhum filtro aplicado, exibindo todos os dados.");
@@ -115,12 +118,27 @@ export default function MonitoramentoPotais() {
     }
 
     const filteredData = data.filter((item) => {
-      // Se não foi selecionado nenhum filtro para Integrado, não retorna nada
       let integradoMatch = true;
       if (filterData.Integrado === "true") {
         integradoMatch = item.integrado === true;
       } else if (filterData.Integrado === "false") {
         integradoMatch = item.integrado === false;
+      }
+
+      let dataCriacaoMatch = true;
+      if (filterData.data_criacao && Array.isArray(filterData.data_criacao)) {
+        const [start, end] = filterData.data_criacao;
+        if (start && end) {
+          const startDate = parseISO(start);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = parseISO(end);
+          endDate.setHours(23, 59, 59, 999);
+
+          const itemDate = new Date(item.data_criada);
+          itemDate.setHours(itemDate.getHours() + 3);
+
+          dataCriacaoMatch = itemDate >= startDate && itemDate <= endDate;
+        }
       }
 
       const midiaMatch =
@@ -133,7 +151,11 @@ export default function MonitoramentoPotais() {
         (item.origem &&
           item.origem.toLowerCase().includes(filterData.Origem.toLowerCase()));
 
-      console.log("Origem Match:", item.origem, origemMatch, filterData.Origem);
+      const valorMatch =
+        !filterData.Valor ||
+        (item.valor !== undefined &&
+          String(item.valor).includes(filterData.Valor));
+
       return (
         (!filterData.Empresa ||
           (item.nome &&
@@ -149,13 +171,11 @@ export default function MonitoramentoPotais() {
           telefoneFormaterWithoutMask(item.telefone).includes(
             filterData.Telefone
           )) &&
-        (!filterData.data_criacao ||
-          (item.data_criada &&
-            new Date(item.data_criada).toLocaleDateString("pt-BR") ===
-              new Date(filterData.data_criacao).toLocaleDateString("pt-BR"))) &&
+        dataCriacaoMatch &&
         integradoMatch &&
         midiaMatch &&
-        origemMatch
+        origemMatch &&
+        valorMatch
       );
     });
     setPortaisData(filteredData);

@@ -15,6 +15,7 @@ import { FaEdit, FaAlignRight } from "react-icons/fa";
 import { ActionButton } from "../../components/ActionButton";
 import { formatDateWithoutTimezone } from "../../utils/dateFormater";
 import { useNavigate } from "react-router";
+import Filter, { FilterInput } from "../../components/Filter";
 
 export default function Portais() {
   const [portaisData, setPortais] = useState<
@@ -64,6 +65,22 @@ export default function Portais() {
     status_id: number;
   }>({ id: 0, nome: "", pipeline_id: 0, status_id: 0 });
   const [valid, setValid] = useState<boolean>(true);
+  const [optionsEmpresas, setOptionsEmpresas] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [data, setData] = useState<
+    {
+      id: number;
+      nome: string;
+      pipeline: string;
+      status_pipeline: string;
+      pipeline_id: number;
+      status_id: number;
+      id_cliente: number;
+      data_ultimo_lead: string;
+    }[]
+  >([]);
+
   const navigate = useNavigate();
   const formRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -71,6 +88,7 @@ export default function Portais() {
   const modalEditRef = useRef<HTMLDialogElement>(null);
   const fetchClientes = async () => {
     const data = await getPortais();
+    setData(data);
     setPortais(data);
     console.log("Portais data:", data);
   };
@@ -84,6 +102,12 @@ export default function Portais() {
       setLoadingClientes(true);
       const clientesData = await getClientes();
       setClientes(clientesData);
+      setOptionsEmpresas(
+        clientesData.map((cliente: { nome: string }) => ({
+          label: cliente.nome,
+          value: cliente.nome,
+        }))
+      );
       setLoadingClientes(false);
     };
 
@@ -304,6 +328,98 @@ export default function Portais() {
       </div>
     );
   }
+  const inputs: FilterInput[] = [
+    {
+      label: "Cliente com Portais",
+      type: "select",
+      name: "cliente",
+      options: optionsEmpresas,
+    },
+    {
+      label: "Funil",
+      type: "text",
+      name: "funil",
+    },
+    { label: "Status", type: "text", name: "status" },
+    {
+      label: "Último Lead",
+      type: "date-range",
+      name: "periodo",
+    },
+  ];
+
+  function handleFilterSubmit(filterData: Record<string, any>) {
+    // Sempre filtrar a partir dos dados principais (portaisData original)
+    let filtered = [...data];
+
+    // Filtro por cliente (case insensitive)
+    if (filterData.cliente && filterData.cliente !== "") {
+      filtered = filtered.filter(
+        (item) =>
+          item.nome &&
+          item.nome.toLowerCase().includes(filterData.cliente.toLowerCase())
+      );
+    }
+
+    // Filtro por funil (pipeline)
+    if (filterData.funil && filterData.funil !== "") {
+      filtered = filtered.filter(
+        (item) =>
+          item.pipeline &&
+          item.pipeline.toLowerCase().includes(filterData.funil.toLowerCase())
+      );
+    }
+
+    // Filtro por status
+    if (filterData.status && filterData.status !== "") {
+      filtered = filtered.filter(
+        (item) =>
+          item.status_pipeline &&
+          item.status_pipeline
+            .toLowerCase()
+            .includes(filterData.status.toLowerCase())
+      );
+    }
+
+    // Filtro por período (date-range)
+    if (
+      filterData.periodo &&
+      Array.isArray(filterData.periodo) &&
+      filterData.periodo.length === 2 &&
+      filterData.periodo[0] &&
+      filterData.periodo[1]
+    ) {
+      const [start, end] = filterData.periodo as [string, string];
+      const startDate = new Date(start);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(end);
+      endDate.setHours(23, 59, 59, 999);
+
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.data_ultimo_lead);
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    } else if (
+      filterData.periodo &&
+      typeof filterData.periodo === "string" &&
+      filterData.periodo.includes(",")
+    ) {
+      // Caso o período venha como string "YYYY-MM-DD,YYYY-MM-DD"
+      const [start, end] = filterData.periodo.split(",");
+      if (start && end) {
+        const startDate = new Date(start);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(end);
+        endDate.setHours(23, 59, 59, 999);
+        filtered = filtered.filter((item) => {
+          const itemDate = new Date(item.data_ultimo_lead);
+          return itemDate >= startDate && itemDate <= endDate;
+        });
+      }
+    }
+
+    setPortais(filtered);
+  }
   return (
     <div className="flex h-full flex-col">
       {" "}
@@ -312,7 +428,7 @@ export default function Portais() {
         {" "}
         {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Clientes com Portal</h1>
+          <h1 className="text-2xl font-bold">Clientes com Portais</h1>
           <div className="flex items-center gap-2">
             <button
               className="btn btn-primary text-neutral"
@@ -329,6 +445,10 @@ export default function Portais() {
               + Adicionar Portal
             </button>
           </div>
+        </div>
+        <div className="w-full">
+          {" "}
+          <Filter onSubmit={handleFilterSubmit} inputs={inputs} />
         </div>
         <div className="overflow-x-auto">
           <Table

@@ -15,6 +15,7 @@ import { useNavigate } from "react-router";
 import { ActionButton } from "../../components/ActionButton";
 
 import DeleteWarning from "../../components/DeleteWarning";
+import Filter, { FilterInput } from "../../components/Filter";
 
 export default function Clientes() {
   const navigate = useNavigate();
@@ -23,7 +24,6 @@ export default function Clientes() {
       id: number;
       automotivo: boolean;
       nome: string;
-      tintim: boolean;
       token: string;
     }>
   >([]);
@@ -33,6 +33,18 @@ export default function Clientes() {
     token: string;
     automotivo: boolean;
   } | null>(null);
+  const [data, setData] = useState<
+    Array<{
+      id: number;
+      automotivo: boolean;
+      nome: string;
+      token: string;
+    }>
+  >([]);
+  const [optionsEmpresas, setOptionsEmpresas] = useState<
+    { label: string; value: string }[]
+  >([]);
+
   const formRef = useRef<HTMLFormElement>(null);
   const formEditRef = useRef<HTMLFormElement>(null);
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -41,6 +53,13 @@ export default function Clientes() {
     const fetchClientes = async () => {
       const data = await getClientes();
       setClientes(data);
+      setData(data);
+      setOptionsEmpresas(
+        data.map((data: { nome: string }) => ({
+          label: data.nome,
+          value: data.nome,
+        }))
+      );
       console.log("Clientes carregados:", data);
     };
 
@@ -138,6 +157,54 @@ export default function Clientes() {
     setEditClient(null);
     modalEditRef.current?.close();
   };
+
+  const inputs: FilterInput[] = [
+    {
+      label: "Cliente",
+      type: "select",
+      name: "nome",
+      options: optionsEmpresas,
+    },
+    {
+      label: "Automotivo",
+      type: "radio",
+      name: "automotivo",
+      options: [
+        { label: "Sim", value: "true" },
+        { label: "Não", value: "false" },
+      ],
+    },
+  ];
+  function handleFilterSubmit(filterData: Record<string, string>) {
+    // Se nenhum filtro for aplicado, mostra todos os clientes
+    if (
+      (!filterData.nome || filterData.nome === "") &&
+      (!filterData.automotivo || filterData.automotivo === "")
+    ) {
+      setClientes(data);
+      return;
+    }
+
+    let filtered = [...data];
+
+    // Filtro por nome do cliente (case insensitive)
+    if (filterData.nome && filterData.nome !== "") {
+      filtered = filtered.filter(
+        (item) =>
+          item.nome &&
+          item.nome.toLowerCase().includes(filterData.nome.toLowerCase())
+      );
+    }
+
+    // Filtro por automotivo (true/false)
+    if (filterData.automotivo && filterData.automotivo !== "") {
+      const isAutomotivo = filterData.automotivo === "true";
+      filtered = filtered.filter((item) => item.automotivo === isAutomotivo);
+    }
+
+    setClientes(filtered);
+  }
+
   return (
     <div className="flex h-full flex-col">
       {" "}
@@ -153,6 +220,10 @@ export default function Clientes() {
           >
             + Adicionar Cliente
           </button>
+        </div>
+        <div className="w-full">
+          {" "}
+          <Filter onSubmit={handleFilterSubmit} inputs={inputs} />
         </div>
         {/* Tabela */}
         <div className="overflow-x-auto">
