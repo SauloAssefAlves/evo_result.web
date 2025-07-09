@@ -8,7 +8,7 @@ import {
   telefoneFormater,
   telefoneFormaterWithoutMask,
 } from "../../utils/telefoneFormater.js";
-import Filter from "../../components/Filter/index.js";
+import Filter, { FilterInput } from "../../components/Filter/index.js";
 import { parseISO } from "date-fns";
 import { getTintim } from "../../services/clientesService";
 
@@ -77,22 +77,28 @@ export default function MonitoramentoTintim() {
   useEffect(() => {
     fetchClientes();
   }, []);
-  const inputs = [
-    { label: "Empresa", type: "select", options: optionsEmpresas },
-    { label: "Nome", type: "text" },
-    { label: "Telefone", type: "number" },
-    { label: "Anúncio", type: "text" },
-    { label: "Campanha", type: "text" },
-    { label: "Conjunto", type: "text" },
-    { label: "Origem", type: "text" },
-    { label: "Mídia", type: "text" },
-    { label: "data_criacao", type: "date-range" },
+  const inputs: FilterInput[] = [
+    {
+      label: "Empresa",
+      name: "nome_empresa",
+      type: "select",
+      options: optionsEmpresas,
+    },
+    { label: "Nome", name: "nome_lead", type: "text" },
+    { label: "Telefone", name: "telefone", type: "number" },
+    { label: "Campanha", name: "nome_campanha", type: "text" },
+    { label: "Conjunto", name: "nome_conjunto", type: "text" },
+    { label: "Anúncio", name: "nome_anuncio", type: "text" },
+    { label: "Mídia", name: "midia", type: "text" },
+    { label: "Origem", name: "origem", type: "text" },
+    { label: "Data Criação", name: "data_criacao", type: "date-range" },
     {
       label: "Integrado",
+      name: "integrado",
       type: "radio",
       options: [
-        { label: "Integrado", value: "true" },
-        { label: "Não integrado", value: "false" },
+        { label: "Sim", value: "true" },
+        { label: "Não", value: "false" },
       ],
     },
   ];
@@ -100,15 +106,15 @@ export default function MonitoramentoTintim() {
   function handleFilterSubmit(filterData: Record<string, string>) {
     console.log("Dados do filtro:", filterData);
     if (
-      !filterData.Empresa &&
-      !filterData.Nome &&
-      !filterData.Telefone &&
-      !filterData["Anúncio"] &&
-      !filterData.Campanha &&
-      !filterData.Conjunto &&
-      !filterData.Origem &&
-      !filterData["Mídia"] &&
-      filterData.Integrado === undefined &&
+      !filterData.nome_empresa &&
+      !filterData.nome_lead &&
+      !filterData.telefone &&
+      !filterData.nome_anuncio &&
+      !filterData.nome_campanha &&
+      !filterData.nome_conjunto &&
+      !filterData.origem &&
+      !filterData.midia &&
+      filterData.integrado === undefined &&
       !filterData.data_criacao
     ) {
       setTintimData(data);
@@ -118,9 +124,9 @@ export default function MonitoramentoTintim() {
 
     const filteredData = data.filter((item) => {
       let integradoMatch = true;
-      if (filterData.Integrado === "true") {
+      if (filterData.integrado === "true") {
         integradoMatch = item.integrado === true;
-      } else if (filterData.Integrado === "false") {
+      } else if (filterData.integrado === "false") {
         integradoMatch = item.integrado === false;
       }
 
@@ -141,38 +147,38 @@ export default function MonitoramentoTintim() {
       }
 
       return (
-        (!filterData.Empresa ||
+        (!filterData.nome_empresa ||
           item.nome_empresa
             .toLowerCase()
-            .includes(filterData.Empresa.toLowerCase())) &&
-        (!filterData.Nome ||
+            .includes(filterData.nome_empresa.toLowerCase())) &&
+        (!filterData.nome_lead ||
           item.nome_lead
             .toLowerCase()
-            .includes(filterData.Nome.toLowerCase())) &&
-        (!filterData.Telefone ||
+            .includes(filterData.nome_lead.toLowerCase())) &&
+        (!filterData.telefone ||
           telefoneFormaterWithoutMask(item.telefone).includes(
-            filterData.Telefone
+            filterData.telefone
           )) &&
-        (!filterData["Anúncio"] ||
+        (!filterData.nome_anuncio ||
           item.nome_anuncio
             ?.toLowerCase()
-            .includes(filterData["Anúncio"].toLowerCase())) &&
-        (!filterData.Campanha ||
+            .includes(filterData.nome_anuncio.toLowerCase())) &&
+        (!filterData.nome_campanha ||
           item.nome_campanha
             ?.toLowerCase()
-            .includes(filterData.Campanha.toLowerCase())) &&
-        (!filterData.Conjunto ||
+            .includes(filterData.nome_campanha.toLowerCase())) &&
+        (!filterData.nome_conjunto ||
           item.nome_conjunto
             ?.toLowerCase()
-            .includes(filterData.Conjunto.toLowerCase())) &&
-        (!filterData.Origem ||
+            .includes(filterData.nome_conjunto.toLowerCase())) &&
+        (!filterData.origem ||
           item.origem
             ?.toLowerCase()
-            .includes(filterData.Origem.toLowerCase())) &&
-        (!filterData["Mídia"] ||
+            .includes(filterData.origem.toLowerCase())) &&
+        (!filterData.midia ||
           item.midia
             ?.toLowerCase()
-            .includes(filterData["Mídia"].toLowerCase())) &&
+            .includes(filterData.midia.toLowerCase())) &&
         dataCriacaoMatch &&
         integradoMatch
       );
