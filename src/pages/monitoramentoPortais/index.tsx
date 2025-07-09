@@ -76,7 +76,12 @@ export default function MonitoramentoPotais() {
     fetchClientes();
   }, []);
   const inputs = [
-    { label: "Empresa", type: "select", options: optionsEmpresas, placehold: "Selecione a Empresa..." },
+    {
+      label: "Empresa",
+      type: "select",
+      options: optionsEmpresas,
+      placehold: "Selecione a Empresa...",
+    },
     { label: "Nome", type: "text" },
     { label: "Telefone", type: "number" },
     { label: "data_criacao", type: "date" },
@@ -165,7 +170,7 @@ export default function MonitoramentoPotais() {
         {" "}
         {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Monitoramento Tintim</h1>
+          <h1 className="text-2xl font-bold">Monitoramento Portais</h1>
         </div>
         <div className="w-full">
           {" "}
@@ -178,8 +183,8 @@ export default function MonitoramentoPotais() {
               "Empresa",
               "Nome",
               "Telefone",
-              "Origem",
               "Mídia",
+              "Origem",
               "Valor",
               "Data Criação",
               "Integrado",
