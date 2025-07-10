@@ -8,7 +8,7 @@ interface ActionButtonProps {
 export function ActionButton({ action, label }: ActionButtonProps) {
   return (
     <button
-      className="btn btn-neutral border-0 hover:text-neutral hover:bg-primary"
+      className="btn btn-neutral text-neutral-content border-0 hover:text-neutral hover:bg-primary"
       onClick={action}
     >
       {label}

@@ -343,10 +343,12 @@ export default function Tintim() {
         {" "}
         {/* Adicionado overflow-auto */}
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Clientes com TinTim</h1>
+          <h1 className="text-2xl text-base-content font-bold">
+            Clientes com TinTim
+          </h1>
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-primary text-neutral"
+              className="btn btn-primary text-primary-content"
               onClick={() => {
                 navigate("/dashboard/tintim/monitoramento");
               }}
@@ -354,7 +356,7 @@ export default function Tintim() {
               <FaAlignRight className="w-4 h-4" />
             </button>
             <button
-              className="btn btn-primary text-neutral"
+              className="btn btn-primary text-primary-content"
               onClick={() => modalRef.current?.showModal()}
             >
               + Adicionar Tintim
