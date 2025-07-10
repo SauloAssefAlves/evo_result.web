@@ -6,6 +6,7 @@ import { useState } from "react";
 import Alert from "../../components/Alert";
 import { useNavigate } from "react-router";
 import { login } from "../../services/clientesService";
+import logoEVO from "../../assets/logoEVO.png";
 
 const schema = Yup.object().shape({
   email: Yup.string().email("Email inválido").required("Email é obrigatório"),
@@ -54,58 +55,97 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-200">
-      <div className="w-full max-w-md p-8 bg-gray-100 rounded-2xl shadow-lg">
-        <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">
-            evo <span className="text-amber-400">result</span>
-          </h1>
+    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+      <div className="card w-full max-w-md bg-base-100 shadow-xl">
+        <div className="card-body">
+          {/* Logo */}
+          {/* <div className="flex justify-center mb-6">
+            <img src={logoEVO} alt="EVO Result" className="h-20 w-auto" />
+          </div> */}
+
+          {/* Título */}
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-base-content">Bem-vindo</h1>
+            <p className="text-base-content/70 mt-2">
+              Faça login para continuar
+            </p>
+          </div>
+
+          {/* Formulário */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Campo Email */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text pb-1">Email</span>
+              </label>
+              <input
+                type="email"
+                {...register("email")}
+                className="input input-bordered w-full focus:outline-0"
+                placeholder="Digite seu email"
+                onChange={handleInputChange}
+              />
+              {errors.email && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.email.message}
+                  </span>
+                </label>
+              )}
+            </div>
+
+            {/* Campo Senha */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text pb-1">Senha</span>
+              </label>
+              <input
+                type="password"
+                {...register("password")}
+                className="input input-bordered w-full focus:outline-0"
+                placeholder="Digite sua senha"
+                onChange={handleInputChange}
+              />
+              {errors.password && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {errors.password.message}
+                  </span>
+                </label>
+              )}
+            </div>
+
+            {/* Link Esqueceu a senha */}
+            {/* <div className="text-right">
+              <a href="#" className="link link-primary text-sm">
+                Esqueceu a senha?
+              </a>
+            </div> */}
+
+            {/* Botão Login */}
+            <div className="form-control mt-6 w-full">
+              <button type="submit" className="btn btn-primary w-full">
+                Entrar
+              </button>
+            </div>
+
+            {/* Divider */}
+            {/* <div className="divider">ou</div> */}
+
+            {/* Link Criar conta */}
+            {/* <div className="text-center">
+              <p className="text-base-content/70">
+                Não tem uma conta?{" "}
+                <a href="#" className="link link-primary">
+                  Criar conta
+                </a>
+              </p>
+            </div> */}
+          </form>
         </div>
-        <p className="text-center text-gray-700 mb-6">
-          Faça login para acessar o painel
-        </p>
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text text-black font-semibold">Email</span>
-            </label>
-            <input
-              type="email"
-              {...register("email")}
-              className="input input-bordered w-full focus:outline-0"
-              placeholder="Digite seu email"
-              onChange={handleInputChange}
-            />
-            {errors.email && (
-              <p className="text-red-500 font-light text-xs">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text text-black font-semibold">Senha</span>
-            </label>
-            <input
-              type="password"
-              {...register("password")}
-              className="input input-bordered w-full focus:outline-0"
-              placeholder="Digite sua senha"
-              onChange={handleInputChange}
-            />
-            {errors.password && (
-              <p className="text-red-500 font-light text-xs">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <button type="submit" className="btn btn-primary group w-full">
-            Login
-          </button>
-        </form>
       </div>
+
+      {/* Alert Message */}
       {alertMessage.message && (
         <Alert message={alertMessage.message} type={alertMessage.type} />
       )}

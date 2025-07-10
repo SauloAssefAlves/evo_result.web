@@ -47,13 +47,15 @@ export default function Table({ columns, data }: TableProps) {
             ))}
           </div>
           {/* Corpo */}
-          <div className="flex flex-col border border-gray-200 text-sm font-semibold">
+          <div className="flex flex-col border border-neutral text-xs font-semibold">
             {currentData.length > 0 ? (
               currentData.map((row, rowIndex) => (
                 <div
                   key={rowIndex}
-                  className={`flex hover:bg-gray-100 ${
-                    rowIndex === currentData.length - 1 ? "" : "border-b"
+                  className={`flex hover:bg-neutral/30 ${
+                    rowIndex === currentData.length - 1
+                      ? ""
+                      : "border-b border-neutral"
                   }`}
                 >
                   {columns.map((col, colIndex) => (
@@ -79,8 +81,8 @@ export default function Table({ columns, data }: TableProps) {
       </div>
 
       {/* Footer (paginação) */}
-      <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
-        <div className="bg-black h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
+      <div className="bg-neutral h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
+        <div className="bg-neutral h-10 rounded-b-lg flex justify-center items-center gap-4 p-4 w-full">
           <div className="flex justify-between items-center w-full">
             {/* Botões e paginação centralizados */}
             <div className="flex justify-center items-center flex-1">
@@ -88,7 +90,7 @@ export default function Table({ columns, data }: TableProps) {
                 <>
                   {currentPage > 1 ? (
                     <button
-                      className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
+                      className="btn btn-sm ring-1 ring-neutral text-base-content hover:bg-yellow-500 hover:text-black"
                       onClick={() => setCurrentPage((prev) => prev - 1)}
                     >
                       <FaChevronLeft />
@@ -101,7 +103,7 @@ export default function Table({ columns, data }: TableProps) {
                   </span>
                   {currentPage < totalPages ? (
                     <button
-                      className="btn btn-sm glass text-white hover:bg-yellow-500 hover:text-black"
+                      className="btn btn-sm ring-1 ring-neutral text-base-content hover:bg-yellow-500 hover:text-black"
                       onClick={() => setCurrentPage((prev) => prev + 1)}
                     >
                       <FaChevronRight />

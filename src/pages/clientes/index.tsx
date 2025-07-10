@@ -209,13 +209,11 @@ export default function Clientes() {
     <div className="flex h-full flex-col">
       {" "}
       {/* Alterado para flex-col */}
-      <main className="flex-1 overflow-auto">
-        {" "}
-        {/* Adicionado overflow-auto */}
+      <main className="flex-1 ">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Lista de Clientes</h1>
           <button
-            className="btn btn-primary text-neutral"
+            className="btn btn-primary text-primary-content"
             onClick={() => modalRef.current?.showModal()}
           >
             + Adicionar Cliente
@@ -329,6 +327,7 @@ export default function Clientes() {
             Editar Cliente
             <span className="text-primary"> ] </span>
           </h2>
+
           {editClient && (
             <form
               ref={formEditRef}

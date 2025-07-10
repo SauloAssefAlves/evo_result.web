@@ -205,8 +205,8 @@ const Filter = <T extends Record<string, unknown>>({
                       className={`flex flex-1 items-center gap-2 px-3 py-2 rounded border transition-colors cursor-pointer whitespace-nowrap
                   ${
                     field.value === opt.value
-                      ? "border-blue-500 bg-blue-50 text-blue-600"
-                      : "border-neutral-300 bg-white text-neutral-700"
+                      ? "border-blue-500 bg-transparent text-info"
+                      : "border-neutral bg-transparent  text-base-content hover:border-neutral-content/50"
                   }
                   `}
                     >
@@ -257,15 +257,15 @@ const Filter = <T extends Record<string, unknown>>({
           {renderInputs()}
           <div className="flex gap-2 min-w-[300px] pt-6">
             <button
-              className="btn btn-soft text-neutral h-[40px] min-w-[200px]"
+              className="btn btn-soft text-base-content h-[40px] min-w-[200px] group hover:bg-neutral-content/10 "
               type="submit"
             >
-              FILTRAR <IoFilterSharp className="h-4 w-4 text-neutral" />
+              FILTRAR{" "}
+              <IoFilterSharp className="h-4 w-4 text-base-content group-hover:text-accent " />
             </button>
-   
 
             <button
-              className="btn btn-warning min-w-[92px]"
+              className="btn btn-soft hover:btn-error group min-w-[92px]"
               type="button"
               onClick={() => {
                 // Limpa todos os campos do formulário e retorna os dados limpos
@@ -280,7 +280,7 @@ const Filter = <T extends Record<string, unknown>>({
                 onSubmit(resetData as T);
               }}
             >
-              <GiCancel className="h-5 w-5 text-neutral" />
+              <GiCancel className="h-5 w-5 text-error group-hover:text-error-content" />
             </button>
           </div>
         </div>

@@ -431,7 +431,7 @@ export default function Portais() {
           <h1 className="text-2xl font-bold">Clientes com Portais</h1>
           <div className="flex items-center gap-2">
             <button
-              className="btn btn-primary text-neutral"
+              className="btn btn-primary text-primary-content"
               onClick={() => {
                 navigate("/dashboard/portais/monitoramento");
               }}
@@ -439,7 +439,7 @@ export default function Portais() {
               <FaAlignRight className="w-4 h-4" />
             </button>
             <button
-              className="btn btn-primary text-neutral"
+              className="btn btn-primary text-primary-content"
               onClick={() => modalRef.current?.showModal()}
             >
               + Adicionar Portal
