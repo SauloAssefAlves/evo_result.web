@@ -176,9 +176,7 @@ export default function MonitoramentoTintim() {
             ?.toLowerCase()
             .includes(filterData.origem.toLowerCase())) &&
         (!filterData.midia ||
-          item.midia
-            ?.toLowerCase()
-            .includes(filterData.midia.toLowerCase())) &&
+          item.midia?.toLowerCase().includes(filterData.midia.toLowerCase())) &&
         dataCriacaoMatch &&
         integradoMatch
       );
@@ -204,17 +202,17 @@ export default function MonitoramentoTintim() {
         <div className="overflow-x-auto">
           <Table
             columns={[
-              "Empresa",
-              "Nome",
-              "Telefone",
-              "Campanha",
-              "Conjunto",
-              "Anúncio",
-              "Mídia",
-              "Origem",
-              "Data Criação",
-              "Integrado",
-              "Causa",
+              { name: "Empresa", sortType: "string" as const },
+              { name: "Nome", sortType: "string" as const },
+              { name: "Telefone", sortable: false },
+              { name: "Campanha", sortable: false },
+              { name: "Conjunto", sortable: false },
+              { name: "Anúncio", sortable: false },
+              { name: "Mídia", sortable: false },
+              { name: "Origem", sortable: false },
+              { name: "Data Criação", sortType: "datetime" as const },
+              { name: "Integrado", sortType: "boolean" as const },
+              { name: "Causa", sortable: false },
             ]}
             data={tintimData.map(
               ({

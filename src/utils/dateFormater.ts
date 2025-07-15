@@ -21,12 +21,14 @@ export function formatDateWithTimezone(data_criacao: string | number | Date) {
   return `${dataFormatada} ${horaFormatada}`;
 }
 
-export function formatDateWithoutTimezone(data_criacao: string | number | Date) {
-if (!data_criacao) {
-    return null;
-}
-// Cria um objeto Date
-const data = new Date(data_criacao);
+export function formatDateWithoutTimezone(
+  data_criacao: string | number | Date
+) {
+  if (!data_criacao) {
+    return null; // Retorna a menor data possível se o valor for inválido
+  }
+  // Cria um objeto Date
+  const data = new Date(data_criacao);
 
   // Formata a data no padrão brasileiro
   const dataFormatada = data.toLocaleDateString("pt-BR", {

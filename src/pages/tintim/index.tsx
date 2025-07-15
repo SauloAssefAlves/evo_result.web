@@ -369,7 +369,12 @@ export default function Tintim() {
         </div>
         <div className="overflow-x-auto">
           <Table
-            columns={["Cliente", "Unidade", "Último Tintim", "Ações"]}
+            columns={[
+              { name: "Cliente", sortType: "string" as const },
+              { name: "Unidade", sortable: false },
+              { name: "Último Tintim", sortType: "datetime" as const },
+              { name: "Ações", sortable: false },
+            ]}
             data={tintimData.map(
               ({
                 id,

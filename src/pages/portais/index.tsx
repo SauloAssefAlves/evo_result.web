@@ -452,7 +452,13 @@ export default function Portais() {
         </div>
         <div className="overflow-x-auto">
           <Table
-            columns={["Cliente", "Funil", "Status", "Último Lead", "Ações"]}
+            columns={[
+              { name: "Cliente", sortType: "string" },
+              { name: "Funil", sortable: false },
+              { name: "Status", sortType: "string" },
+              { name: "Último Lead", sortType: "datetime" },
+              { name: "Ações", sortable: false },
+            ]}
             data={portaisData.map(
               ({
                 id,
