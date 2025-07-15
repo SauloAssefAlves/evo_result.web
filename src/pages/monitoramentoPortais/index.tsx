@@ -8,7 +8,7 @@ import {
   telefoneFormater,
   telefoneFormaterWithoutMask,
 } from "../../utils/telefoneFormater.js";
-import Filter, {FilterInput} from "../../components/Filter/index.js";
+import Filter, { FilterInput } from "../../components/Filter/index.js";
 import { formatDateWithoutTimezone } from "../../utils/dateFormater.js";
 import { getPortais } from "../../services/clientesService.js";
 import { parseISO } from "date-fns";
@@ -200,15 +200,15 @@ export default function MonitoramentoPotais() {
         <div className="overflow-x-auto">
           <Table
             columns={[
-              "Empresa",
-              "Nome",
-              "Telefone",
-              "Mídia",
-              "Origem",
-              "Valor",
-              "Data Criação",
-              "Integrado",
-              "Causa",
+              { name: "Empresa", sortType: "string" as const },
+              { name: "Nome", sortType: "string" as const },
+              { name: "Telefone", sortable: false },
+              { name: "Mídia", sortable: false },
+              { name: "Origem", sortable: false },
+              { name: "Valor", sortType: "number" as const },
+              { name: "Data Criação", sortType: "datetime" as const },
+              { name: "Integrado", sortType: "boolean" as const },
+              { name: "Causa", sortable: false },
             ]}
             data={portaisData.map(
               ({
@@ -227,7 +227,7 @@ export default function MonitoramentoPotais() {
                 Telefone: telefoneFormater(telefone) || "N/A",
                 Origem: origem || "N/A",
                 Midia: midia || "N/A",
-                Valor: valor ? `R$ ${valor}` : "N/A",
+                Valor: valor ? `${valor}` : 0,
                 DataCriacao: formatDateWithoutTimezone(data_criada) || "N/A",
                 Integrado: integrado ? (
                   <FaCheck className="text-success text-xl" />

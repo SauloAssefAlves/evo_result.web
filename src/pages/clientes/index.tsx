@@ -226,7 +226,11 @@ export default function Clientes() {
         {/* Tabela */}
         <div className="overflow-x-auto">
           <Table
-            columns={["Nome", "Automotivo", "Ações"]}
+            columns={[
+              { name: "Nome", sortType: "string" as const },
+              { name: "Automotivo", sortType: "boolean" as const },
+              { name: "Ações", sortable: false },
+            ]}
             data={clientes.map(({ nome, id, token, automotivo }) => ({
               Nome: nome,
               Automotivo: automotivo ? (
