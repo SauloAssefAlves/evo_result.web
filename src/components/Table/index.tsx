@@ -56,53 +56,63 @@ function convertValueForSort(value: any, sortType: SortType): any {
   // Função auxiliar para parser de datas brasileiras
   const parseDate = (dateStr: string): Date => {
     if (!dateStr || typeof dateStr !== "string") {
-      return new Date(dateStr);
+      return new Date(NaN);
     }
 
-    // Tenta parser direto primeiro
-    let date = new Date(dateStr);
-    if (!isNaN(date.getTime())) {
-      return date;
-    }
+    // Remove espaços extras
+    const cleanDateStr = dateStr.trim();
 
-    // Parser para formato brasileiro: dd/mm/yyyy ou dd/mm/yyyy hh:mm
+    // Parser para formato brasileiro: dd/mm/yyyy ou dd/mm/yyyy hh:mm:ss
     const brazilianDateRegex =
       /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/;
-    const match = dateStr.match(brazilianDateRegex);
+    const match = cleanDateStr.match(brazilianDateRegex);
 
     if (match) {
       const [, day, month, year, hours = "0", minutes = "0", seconds = "0"] =
         match;
       // Mês é 0-indexado no JavaScript
-      date = new Date(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        parseInt(hours),
-        parseInt(minutes),
-        parseInt(seconds)
+      const date = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10) - 1,
+        parseInt(day, 10),
+        parseInt(hours, 10),
+        parseInt(minutes, 10),
+        parseInt(seconds, 10)
       );
-      return date;
+
+      // Verifica se a data é válida
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
     }
 
-    // Parser para outros formatos comuns
-    // dd-mm-yyyy ou dd-mm-yyyy hh:mm
+    // Parser para outros formatos comuns: dd-mm-yyyy ou dd-mm-yyyy hh:mm:ss
     const dashDateRegex =
       /^(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/;
-    const dashMatch = dateStr.match(dashDateRegex);
+    const dashMatch = cleanDateStr.match(dashDateRegex);
 
     if (dashMatch) {
       const [, day, month, year, hours = "0", minutes = "0", seconds = "0"] =
         dashMatch;
-      date = new Date(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        parseInt(hours),
-        parseInt(minutes),
-        parseInt(seconds)
+      const date = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10) - 1,
+        parseInt(day, 10),
+        parseInt(hours, 10),
+        parseInt(minutes, 10),
+        parseInt(seconds, 10)
       );
-      return date;
+
+      // Verifica se a data é válida
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
+    }
+
+    // Tenta parser direto como último recurso
+    const directDate = new Date(cleanDateStr);
+    if (!isNaN(directDate.getTime())) {
+      return directDate;
     }
 
     // Se nenhum parser funcionou, retorna data inválida
@@ -129,8 +139,7 @@ function convertValueForSort(value: any, sortType: SortType): any {
       return new Date(0);
     case "datetime":
       // Para data e hora completa
-      // Se valor é null/undefined, retorna a menor data possível
-      console.log("Datetime value:", value);
+      // Se valor é null/undefined, retorna a menor data possível para asc, maior para desc
       if (value === null || value === undefined || value === "") {
         return new Date(0); // 1970-01-01 00:00:00 (menor valor padrão)
       }
@@ -139,7 +148,9 @@ function convertValueForSort(value: any, sortType: SortType): any {
       if (!isNaN(datetime.getTime())) {
         return datetime;
       }
-      console.warn("Failed to parse datetime:", value);
+
+      // Se o parse falhou, log para debug e retorna data mínima
+
       return new Date(0);
     case "boolean":
       if (typeof value === "boolean") return value;
@@ -154,7 +165,6 @@ function convertValueForSort(value: any, sortType: SortType): any {
           lower === "1"
         );
       }
-      console.log(value);
       if (value.type.name === "FaCheck" || value.type.name === "ImCross") {
         return value.type.name === "FaCheck";
       }
@@ -200,15 +210,23 @@ export default function Table({ columns, data }: TableProps) {
       return data;
     }
 
-    const columnKey = formatarTexto(sortConfig.column);
     const column = columns.find(
       (col) => getColumnName(col) === sortConfig.column
     );
     const sortType = column ? getColumnSortType(column) : "string";
 
+    // Try both formatted and original column names to find the correct key
+    const originalColumnKey = sortConfig.column;
+    const formattedColumnKey = formatarTexto(sortConfig.column);
+
     return [...data].sort((a, b) => {
-      const aValue = convertValueForSort(a[columnKey], sortType);
-      const bValue = convertValueForSort(b[columnKey], sortType);
+      // Check which key exists in the data object
+      const keyToUse = a.hasOwnProperty(originalColumnKey)
+        ? originalColumnKey
+        : formattedColumnKey;
+
+      const aValue = convertValueForSort(a[keyToUse], sortType);
+      const bValue = convertValueForSort(b[keyToUse], sortType);
 
       if (aValue < bValue) {
         return sortConfig.direction === "asc" ? -1 : 1;
