@@ -11,6 +11,7 @@ import {
 import Filter, { FilterInput } from "../../components/Filter/index.js";
 import { parseISO } from "date-fns";
 import { getTintim } from "../../services/clientesService";
+import { formatDateWithoutTimezone } from "../../utils/dateFormater.js";
 
 interface TintimData {
   nome_empresa: string;
@@ -236,7 +237,7 @@ export default function MonitoramentoTintim() {
                 Conjunto: nome_conjunto || "N/A",
                 Origem: origem || "N/A",
                 Midia: midia || "N/A",
-                DataCriacao: formatDateWithTimezone(data_criacao) || "N/A",
+                DataCriacao: formatDateWithoutTimezone(data_criacao) || "N/A",
                 Integrado: integrado ? (
                   <FaCheck className="text-success text-xl" />
                 ) : (
