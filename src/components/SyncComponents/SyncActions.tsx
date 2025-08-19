@@ -32,7 +32,7 @@ const SyncActions: React.FC<SyncActionsProps> = ({
             title={disabled ? "Selecione um grupo para sincronizar" : ""}
           >
             <i className="fas fa-sync-alt"></i>
-            Sincronizar Grupo
+            Sincronizar Tudo do Grupo
           </button>
         )}
         {showPipelines && (
@@ -63,7 +63,7 @@ const SyncActions: React.FC<SyncActionsProps> = ({
             title={disabled ? "Selecione um grupo para sincronizar" : ""}
           >
             <i className="fas fa-tags"></i>
-            Sincronizar Campos
+            Sincronizar Custom Fields
           </button>
         )}
         {showFieldGroups && (
@@ -78,7 +78,7 @@ const SyncActions: React.FC<SyncActionsProps> = ({
             title={disabled ? "Selecione um grupo para sincronizar" : ""}
           >
             <i className="fas fa-folder"></i>
-            Sincronizar Grupo dos Campos
+            Sincronizar Custom Fields Groups
           </button>
         )}
         {showRequiredStatuses && (

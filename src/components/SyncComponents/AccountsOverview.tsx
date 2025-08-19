@@ -53,32 +53,7 @@ const AccountsOverview: React.FC<AccountsOverviewProps> = ({
     return "Desatualizado";
   };
 
-  // Função para renderizar item de conta escrava
-  const renderSlaveAccountItem = (slave: SlaveAccount) => {
-    const status = getAccountStatus(slave);
-    const contactCount = slave.contact_count || 0;
 
-    return (
-      <div
-        key={slave.id}
-        className="bg-base-300 bg-opacity-10 border border-base-content border-opacity-20 rounded-lg p-3 hover:bg-base-100 hover:bg-opacity-15"
-      >
-        <div className="flex items-center justify-between">
-          <div className="font-medium truncate">{slave.subdomain}</div>
-          <div
-            className={`badge badge-sm ${
-              slave.status === "inactive" ? "badge-ghost" : "badge-neutral"
-            }`}
-          >
-            {status}
-          </div>
-        </div>
-        <div className="text-xs opacity-80 mt-2">
-          Contatos: {formatNumber(contactCount)}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="card bg-base-300 shadow-sm rounded-2xl p-6 mb-6">
@@ -116,7 +91,6 @@ const AccountsOverview: React.FC<AccountsOverviewProps> = ({
             accounts.map((group: AccountGroup) => {
               const masterAccount = group.master_account;
               const slaveAccounts = group.slave_accounts || [];
-              const totalContacts = group.total_contacts || 0;
               const lastSync = formatLastSync(group.last_sync);
               console.log("Group ID:", masterAccount);
               return (
@@ -219,12 +193,6 @@ const AccountsOverview: React.FC<AccountsOverviewProps> = ({
                         </div>
                       </div>
                       <div className="bg-base-200 p-3 rounded text-center">
-                        <div className="text-xs opacity-80 mb-1">
-                          Total Contatos
-                        </div>
-                        <div className="text-lg font-semibold">
-                          {formatNumber(totalContacts)}
-                        </div>
                       </div>
                       <div className="bg-base-200 p-3 rounded text-center">
                         <div className="text-xs opacity-80 mb-1">
@@ -279,7 +247,25 @@ const AccountsOverview: React.FC<AccountsOverviewProps> = ({
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-base-content ">
                           {slaveAccounts
                             .slice(0, 4)
-                            .map((slave) => renderSlaveAccountItem(slave))}
+                            .map((slave) => (
+                              <div
+                                key={slave.id}
+                                className="bg-base-200 p-3 rounded flex flex-col gap-2"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div className="font-medium">
+                                    {slave.subdomain}
+                                  </div>
+                                  <div>
+                                    <div className="badge badge-sm badge-neutral">
+                                      {getAccountStatus(slave)}
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
+                            ))}
+                          
                           {slaveAccounts.length > 4 && (
                             <div className="bg-base-200 border-2 border-dashed border-base-content border-opacity-30 rounded-lg p-3 flex items-center justify-center min-h-20 cursor-pointer hover:bg-base-200 hover:bg-opacity-50">
                               <div className="text-center flex flex-col items-center gap-1">

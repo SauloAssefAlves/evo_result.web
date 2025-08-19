@@ -153,8 +153,8 @@ export interface GroupManagementProps {
   onRefreshGroups: () => void;
   onCreateGroup: () => void;
   onAddAccount: () => void;
-  onShowDetails: () => void;
-  onSyncGroup: () => void;
+  onShowDetails?: () => void;
+  onSyncGroup?: () => void;
 }
 
 export interface Group {

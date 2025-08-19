@@ -980,6 +980,17 @@ export default function GerenciamentoContas() {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Gerenciamento Kommo</h1>
         </div>
+        {/* Gerenciamento de Grupos */}
+        <GroupManagement
+          groups={groups}
+          selectedGroup={selectedGroup}
+          onGroupSelect={handleGroupSelect}
+          onRefreshGroups={refreshGroups}
+          onCreateGroup={handleCreateGroup}
+          onAddAccount={handleAddAccount}
+          // onShowDetails={handleShowGroupDetails}
+          // onSyncGroup={handleSyncGroup}
+        />
         {/* Visão Geral de Contas */}
         <AccountsOverview
           accounts={accountGroups}
@@ -991,17 +1002,7 @@ export default function GerenciamentoContas() {
           onEditGroup={handleEditGroup}
           onDeleteGroup={handleDeleteGroup}
         />
-        {/* Gerenciamento de Grupos */}
-        <GroupManagement
-          groups={groups}
-          selectedGroup={selectedGroup}
-          onGroupSelect={handleGroupSelect}
-          onRefreshGroups={refreshGroups}
-          onCreateGroup={handleCreateGroup}
-          onAddAccount={handleAddAccount}
-          onShowDetails={handleShowGroupDetails}
-          onSyncGroup={handleSyncGroup}
-        />
+
         {/* Status da Sincronização */}
         <SyncStatus
           status="syncing"
@@ -1065,7 +1066,7 @@ export default function GerenciamentoContas() {
           disabled={!selectedGroupForSync}
         />
         {/* Múltiplas Contas */}
-        <MultiAccountSection
+        {/* <MultiAccountSection
           accounts={slaveAccounts}
           selectedAccounts={selectedAccounts}
           onToggleSelection={toggleAccountSelection}
@@ -1079,9 +1080,9 @@ export default function GerenciamentoContas() {
           setSyncParallel={setSyncParallel}
           continueOnError={continueOnError}
           setContinueOnError={setContinueOnError}
-        />
+        /> */}
         {/* Botões de Teste (temporários para demonstração) */}
-        <div className="mb-6 flex gap-3">
+        {/* <div className="mb-6 flex gap-3">
           <button
             onClick={testError}
             className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors text-sm"
@@ -1094,7 +1095,7 @@ export default function GerenciamentoContas() {
           >
             📝 Testar Logs Coloridos
           </button>
-        </div>
+        </div> */}
         {/* Logs da Sincronização */}
         {/* <LogsSection
           logs={logs}
@@ -1103,7 +1104,7 @@ export default function GerenciamentoContas() {
           onDownload={() => console.log("Download logs")}
         /> */}
         {/* Estatísticas */}
-        <StatsSection stats={stats} />
+        {/* <StatsSection stats={stats} /> */}
 
         {/* Modais */}
         <CreateGroupModal
