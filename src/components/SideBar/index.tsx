@@ -3,9 +3,11 @@ import { BsFillMoonFill, BsPeopleFill } from "react-icons/bs";
 import { SiRedhat } from "react-icons/si";
 import { TbWorldWww } from "react-icons/tb";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
+
 import { useTheme } from "../ThemeProvider";
 import { BsFillSunFill } from "react-icons/bs";
 import { useState, useEffect } from "react";
+import { MdManageAccounts } from "react-icons/md";
 
 export default function SideBar() {
   const { theme, toggleTheme } = useTheme();
@@ -38,7 +40,7 @@ export default function SideBar() {
     <div className="flex min-h-screen bg-neutral overflow-y-hidden">
       {/* Mobile overlay */}
       {!isCollapsed && (
-        <div 
+        <div
           className="fixed inset-0 bg-neutral opacity-50 z-30 md:hidden"
           onClick={toggleSidebar}
         />
@@ -50,21 +52,24 @@ export default function SideBar() {
         className="fixed top-4 left-4 z-50 md:hidden bg-neutral text-neutral-content p-2 rounded-md"
       >
         {isCollapsed ? <HiMenuAlt3 size={24} /> : <HiX size={24} />}
-        
       </button>
 
       {/* Sidebar */}
-      <aside className={`
+      <aside
+        className={`
         fixed left-0 top-0 bg-neutral text-neutral-content p-4 flex flex-col min-h-screen overflow-hidden z-40 transition-all duration-300
-        ${isCollapsed 
-          ? 'w-16 md:w-36' // Mobile: muito pequena, Desktop: normal
-          : 'w-58' // Sempre normal quando expandida
+        ${
+          isCollapsed
+            ? "w-16 md:w-36" // Mobile: muito pequena, Desktop: normal
+            : "w-58" // Sempre normal quando expandida
         }
         
-        ${isCollapsed && 'md:block'} // No desktop, sempre visível
-        ${!isCollapsed || 'max-md:hidden'} // No mobile, esconder quando colapsada
-      `}>
-        
+        ${isCollapsed && "md:block"} // No desktop, sempre visível
+        ${
+          !isCollapsed || "max-md:hidden"
+        } // No mobile, esconder quando colapsada
+      `}
+      >
         {/* Botão toggle para desktop */}
         <div className="hidden md:flex items-end justify-end pt-2 mb-2">
           <button
@@ -72,7 +77,6 @@ export default function SideBar() {
             className="text-neutral-content hover:text-primary transition-colors"
           >
             <HiMenuAlt3 size={20} />
-            
           </button>
         </div>
         {/* Theme toggle */}
@@ -115,7 +119,7 @@ export default function SideBar() {
             <NavLink
               to="/dashboard/clientes"
               className={({ isActive }) =>
-                `btn w-full ${isCollapsed ? 'px-2' : 'justify-start'} ${
+                `btn w-full ${isCollapsed ? "px-2" : "justify-start"} ${
                   isActive ? "btn-primary" : "btn-ghost"
                 }`
               }
@@ -127,7 +131,7 @@ export default function SideBar() {
             <NavLink
               to="/dashboard/tintim"
               className={({ isActive }) =>
-                `btn w-full ${isCollapsed ? 'px-2' : 'justify-start'} ${
+                `btn w-full ${isCollapsed ? "px-2" : "justify-start"} ${
                   isActive ? "btn-primary" : "btn-ghost"
                 }`
               }
@@ -139,7 +143,7 @@ export default function SideBar() {
             <NavLink
               to="/dashboard/portais"
               className={({ isActive }) =>
-                `btn w-full ${isCollapsed ? 'px-2' : 'justify-start'} ${
+                `btn w-full ${isCollapsed ? "px-2" : "justify-start"} ${
                   isActive ? "btn-primary" : "btn-ghost"
                 }`
               }
@@ -147,6 +151,18 @@ export default function SideBar() {
             >
               <TbWorldWww className={isCollapsed ? "" : "mr-2"} />
               {!isCollapsed && "Portais"}
+            </NavLink>
+            <NavLink
+              to="/dashboard/gerenciamento-contas"
+              className={({ isActive }) =>
+                `btn w-full ${isCollapsed ? "px-2" : "justify-start"} ${
+                  isActive ? "btn-primary" : "btn-ghost"
+                }`
+              }
+              title="Gerenciar Kommo"
+            >
+              <MdManageAccounts className={isCollapsed ? "" : "mr-2"} />
+              {!isCollapsed && "Gerenciar Kommo"}
             </NavLink>
           </nav>
         </div>
@@ -160,15 +176,20 @@ export default function SideBar() {
       </aside>
 
       {/* Conteúdo principal */}
-      <main className={`
+      <main
+        className={`
         flex-1 bg-base-100 p-6 transition-all duration-300
-        ${isCollapsed 
-          ? 'ml-16 md:ml-36' // Mobile: margem pequena, Desktop: margem normal quando colapsada
-          : 'ml-58' // Margem normal quando expandida
+        ${
+          isCollapsed
+            ? "ml-16 md:ml-36" // Mobile: margem pequena, Desktop: margem normal quando colapsada
+            : "ml-58" // Margem normal quando expandida
         }
-        ${!isCollapsed && 'max-md:ml-0'} // No mobile, sem margem quando expandida (sidebar sobrepõe)
-      `}>
-        <Outlet  />
+        ${
+          !isCollapsed && "max-md:ml-0"
+        } // No mobile, sem margem quando expandida (sidebar sobrepõe)
+      `}
+      >
+        <Outlet />
       </main>
     </div>
   );

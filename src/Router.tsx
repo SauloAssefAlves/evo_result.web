@@ -9,6 +9,7 @@ import Portais from "./pages/portais/index.tsx";
 import MonitoramentoTintim from "./pages/monitoramentoTintim/index.tsx";
 import MonitoramentoPortais from "./pages/monitoramentoPortais/index.tsx";
 import SideBar from "./components/SideBar/index.tsx";
+import GerenciamentoContas from "./pages/gerenciamentoContas/index.tsx";
 export default function Router() {
   return (
     <Routes>
@@ -26,6 +27,7 @@ export default function Router() {
           path="portais/monitoramento/:id?"
           element={<MonitoramentoPortais />}
         />
+        <Route path="gerenciamento-contas" element={<GerenciamentoContas />} />
       </Route>
     </Routes>
   );
