@@ -1,7 +1,7 @@
 // API Configuration
 const API_CONFIG = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL || "http://89.116.186.230:5000",
-  endpoint: import.meta.env.VITE_API_ENDPOINT || "/api",
+  baseUrl: "http://localhost:5000",
+  endpoint: "/api",
   get fullUrl() {
     return `${this.baseUrl}${this.endpoint}`;
   },
